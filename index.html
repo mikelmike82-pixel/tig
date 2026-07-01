@@ -1,0 +1,1337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Innovators ERP">
+    <title>The Innovators · premium ERP · vibe login</title>
+    <!-- Inter & Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+    <!-- Tailwind + Font Awesome + Chart.js + jsPDF + Firebase -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- Firebase (compat) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <style>
+        /* (all styles unchanged – same as before) */
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: #0b1120;
+        }
+        h1, h2, h3, h4, .heading-font {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+        .glass-card {
+            background: rgba(18, 25, 40, 0.6);
+            backdrop-filter: blur(8px) saturate(160%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.02) inset;
+        }
+        .glass-modal {
+            background: rgba(10, 20, 35, 0.95);
+            backdrop-filter: blur(24px) saturate(200%);
+            border: 1px solid rgba(34, 211, 238, 0.15);
+            box-shadow: 0 30px 60px -15px #00000080, 0 0 0 1px rgba(255,255,255,0.03) inset;
+        }
+        .premium-gradient {
+            background: linear-gradient(145deg, #06b6d4 0%, #2563eb 100%);
+            transition: all 0.2s ease;
+        }
+        .premium-gradient:hover {
+            background: linear-gradient(145deg, #22d3ee 0%, #3b82f6 100%);
+            box-shadow: 0 20px 30px -10px rgba(6, 182, 212, 0.5);
+        }
+        .premium-hover {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .premium-hover:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 25px 35px -12px rgba(6, 182, 212, 0.4);
+        }
+        .table-premium th {
+            background: rgba(255,255,255,0.03);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            font-size: 0.7rem;
+            color: #a5f3fc;
+            padding: 1rem 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .table-premium td {
+            padding: 1rem 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            color: #e2e8f0;
+            font-weight: 400;
+        }
+        .table-premium tbody tr:hover td {
+            background: rgba(255,255,255,0.02);
+        }
+        .input-premium {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 1rem;
+            padding: 0.9rem 1.2rem;
+            color: white;
+            font-weight: 500;
+            transition: all 0.15s;
+        }
+        .input-premium:focus {
+            border-color: #22d3ee;
+            box-shadow: 0 0 0 4px rgba(34, 211, 238, 0.15);
+            outline: none;
+            background: rgba(10,20,35,0.8);
+        }
+        .input-premium::placeholder {
+            color: #94a3b880;
+            font-weight: 400;
+        }
+        .login-bg {
+            background-image: url('2.png');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        .login-bg::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(3px);
+        }
+        #sidebar {
+            max-height: 100vh;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #06b6d4 #1e293b;
+            transition: transform 0.3s ease;
+        }
+        #sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+        #sidebar::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        #sidebar::-webkit-scrollbar-thumb {
+            background: #06b6d4;
+            border-radius: 20px;
+        }
+        .sidebar-pill {
+            background: rgba(255,255,255,0.03);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 40px;
+            padding: 0.6rem 1rem;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            width: 100%;
+            color: #cbd5e1;
+            font-weight: 500;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+        .sidebar-pill:hover {
+            background: rgba(6,182,212,0.15);
+            border-color: rgba(6,182,212,0.3);
+            color: white;
+        }
+        .sidebar-pill i {
+            width: 1.5rem;
+            text-align: center;
+            color: #06b6d4;
+            font-size: 1.1rem;
+            transition: color 0.2s;
+        }
+        .sidebar-pill:hover i {
+            color: #22d3ee;
+        }
+        .main-scroll {
+            scrollbar-width: thin;
+            scrollbar-color: #06b6d4 #1e293b;
+        }
+        .main-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .main-scroll::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        .main-scroll::-webkit-scrollbar-thumb {
+            background: #06b6d4;
+            border-radius: 20px;
+        }
+        .mobile-menu-btn {
+            display: none;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 100;
+            background: rgba(6,182,212,0.2);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(34,211,238,0.3);
+            border-radius: 40px;
+            padding: 0.7rem 1.2rem;
+            color: white;
+            font-size: 1.2rem;
+            box-shadow: 0 10px 20px -5px rgba(0,0,0,0.5);
+        }
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(2px);
+            z-index: 40;
+        }
+        @media (max-width: 1023px) {
+            #sidebar {
+                position: fixed;
+                left: 0;
+                top: 0;
+                width: 280px;
+                transform: translateX(-100%);
+                z-index: 50;
+                border-right: 1px solid rgba(255,255,255,0.1);
+                box-shadow: 10px 0 30px -10px black;
+            }
+            #sidebar.open {
+                transform: translateX(0);
+            }
+            .sidebar-overlay.open {
+                display: block;
+            }
+            .mobile-menu-btn {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+            main {
+                margin-left: 0 !important;
+                padding: 1rem !important;
+                padding-top: 5rem !important;
+            }
+            .glass-card {
+                padding: 1.2rem;
+            }
+            .table-premium th, .table-premium td {
+                padding: 0.75rem 0.5rem;
+                font-size: 0.8rem;
+            }
+        }
+        #loginError {
+            color: #fca5a5;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            text-align: center;
+            min-height: 1.5rem;
+        }
+        .fee-detail-row {
+            background: rgba(0,0,0,0.2);
+            font-size: 0.85rem;
+        }
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .hide-fee-columns .fee-col-monthly,
+        .hide-fee-columns .fee-col-pending {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-200 antialiased">
+
+<!-- GLOBAL MODAL -->
+<div id="globalModal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+    <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="window.closeModal()"></div>
+    <div class="glass-modal rounded-3xl w-full max-w-2xl p-8 shadow-2xl z-10 max-h-[90vh] overflow-y-auto border border-cyan-500/20 mx-4">
+        <div id="modalContent" class="text-slate-100 text-base"></div>
+        <div class="flex justify-end gap-4 mt-8">
+            <button onclick="window.closeModal()" class="px-7 py-3 rounded-xl bg-slate-800/80 hover:bg-slate-700 transition border border-slate-600/40 font-semibold text-sm tracking-wide">Cancel</button>
+            <button id="modalSaveBtn" class="px-7 py-3 rounded-xl premium-gradient text-white font-bold shadow-lg hover:shadow-cyan-500/30 transition text-sm tracking-wide">Save changes</button>
+        </div>
+    </div>
+</div>
+
+<!-- LOGIN SCREEN (default student) -->
+<div id="loginContainer" class="min-h-screen flex items-center justify-center px-4 login-bg relative">
+    <div class="relative z-10 w-full max-w-md">
+        <div class="glass-card rounded-3xl p-6 md:p-8 shadow-2xl border border-cyan-500/20">
+            <div class="flex items-center gap-4 mb-8">
+                <div class="w-14 h-14 premium-gradient rounded-2xl flex items-center justify-center shadow-2xl shadow-cyan-500/30">
+                    <i class="fas fa-graduation-cap text-2xl text-white"></i>
+                </div>
+                <h2 class="text-xl font-extrabold bg-gradient-to-r from-cyan-200 via-blue-100 to-blue-100 bg-clip-text text-transparent heading-font">The Innovators<br>Grammar School</h2>
+            </div>
+            <div class="space-y-5">
+                <div class="relative">
+                    <select id="loginRole" class="w-full p-4 bg-slate-900/60 border border-slate-600/40 rounded-xl text-slate-200 appearance-none focus:border-cyan-400 transition peer font-medium">
+                        <option value="director" class="bg-slate-800">Director</option>
+                        <option value="admin" class="bg-slate-800">Admin</option>
+                        <option value="teacher" class="bg-slate-800">Teacher</option>
+                        <option value="student" selected class="bg-slate-800">Student</option>
+                        <option value="parent" class="bg-slate-800">Parent</option>
+                    </select>
+                    <i class="fas fa-chevron-down absolute right-5 top-1/2 -translate-y-1/2 text-cyan-300/70 pointer-events-none"></i>
+                </div>
+                <div class="relative">
+                    <input type="text" id="loginUser" placeholder=" " value="" class="w-full p-4 bg-slate-900/60 border border-slate-600/40 rounded-xl text-slate-200 peer placeholder-transparent focus:border-cyan-400 transition input-premium">
+                    <label class="absolute left-4 -top-2.5 bg-slate-950 px-2 text-sm font-medium text-cyan-300 transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-slate-400 peer-placeholder-shown:top-4 peer-placeholder-shown:bg-transparent peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-cyan-300 peer-focus:bg-slate-950">Username</label>
+                </div>
+                <div class="relative">
+                    <input type="password" id="loginPass" placeholder=" " value="" class="w-full p-4 bg-slate-900/60 border border-slate-600/40 rounded-xl text-slate-200 peer placeholder-transparent focus:border-cyan-400 transition input-premium pr-12">
+                    <label class="absolute left-4 -top-2.5 bg-slate-950 px-2 text-sm font-medium text-cyan-300 transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-slate-400 peer-placeholder-shown:top-4 peer-placeholder-shown:bg-transparent peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-cyan-300 peer-focus:bg-slate-950">Password</label>
+                    <i class="fas fa-eye absolute right-5 top-1/2 -translate-y-1/2 text-cyan-300/70 cursor-pointer hover:text-cyan-200 transition" id="togglePassword"></i>
+                </div>
+                <button onclick="window.handleLogin()" class="w-full py-4 rounded-xl premium-gradient text-white font-extrabold text-lg shadow-2xl hover:shadow-cyan-500/40 transition premium-hover tracking-wide">log in →</button>
+                <div id="loginError"></div>
+                <p class="text-xs text-slate-500 text-center mt-6 font-medium"></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="appContainer" class="hidden relative flex">
+    <div id="sidebarOverlay" class="sidebar-overlay" onclick="window.toggleSidebar()"></div>
+    <button id="mobileMenuBtn" class="mobile-menu-btn" onclick="window.toggleSidebar()"><i class="fas fa-bars"></i> <span class="text-sm hidden sm:inline">Menu</span></button>
+
+    <aside id="sidebar" class="w-80 bg-slate-900/80 backdrop-blur-xl border-r border-white/5 min-h-screen fixed left-0 top-0 p-6 overflow-y-auto shadow-2xl">
+        <div class="flex items-center gap-3 mb-10 relative">
+            <div class="w-12 h-12 premium-gradient rounded-xl flex items-center justify-center shadow-2xl">
+                <i class="fas fa-school text-2xl text-white"></i>
+            </div>
+            <span class="text-2xl font-extrabold bg-gradient-to-r from-cyan-200 via-blue-100 to-blue-100 bg-clip-text text-transparent heading-font">Innovators ERP</span>
+            <div class="ml-auto relative cursor-pointer" onclick="window.showNotifications()">
+                <i class="fas fa-bell text-2xl text-cyan-300"></i>
+                <span id="notificationBadge" class="notification-badge hidden">0</span>
+            </div>
+        </div>
+        <div id="sidebarMenu" class="space-y-2 text-slate-300"></div>
+        <div class="sticky bottom-0 mt-10 pt-4 border-t border-white/10">
+            <button onclick="window.logout()" class="w-full py-3.5 bg-slate-800/60 hover:bg-slate-700 rounded-xl flex items-center gap-3 px-4 border border-white/5 transition backdrop-blur-sm font-semibold">
+                <i class="fas fa-sign-out-alt text-cyan-300 text-lg"></i> Logout
+            </button>
+        </div>
+    </aside>
+
+    <main class="ml-80 flex-1 p-4 md:p-8 main-scroll" id="mainContent">
+        <div class="text-center text-slate-400 mt-20"><i class="fas fa-spinner fa-pulse text-4xl text-cyan-400"></i><p class="mt-2 font-medium">loading premium experience ...</p></div>
+    </main>
+</div>
+
+<script>
+// ==================== FIREBASE INIT ====================
+const firebaseConfig = {
+    apiKey: "AIzaSyAF6_zHHtydasFBmXkSNiculrHKoP23TPI",
+    authDomain: "innovators-erp.firebaseapp.com",
+    projectId: "innovators-erp",
+    storageBucket: "innovators-erp.firebasestorage.app",
+    messagingSenderId: "782730812150",
+    appId: "1:782730812150:web:62c50d4f116c3ee1f76ad7"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// ==================== NOTIFICATION SETUP ====================
+let notificationPermission = false;
+let lastNotificationCheck = new Date();
+let notificationInterval = null;
+
+async function requestNotificationPermission() {
+    if (!("Notification" in window)) return;
+    if (Notification.permission === "granted") notificationPermission = true;
+    else if (Notification.permission !== "denied") {
+        const permission = await Notification.requestPermission();
+        notificationPermission = permission === "granted";
+    }
+}
+
+function showBrowserNotification(title, body, icon = 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png') {
+    if (!notificationPermission) return;
+    if (document.visibilityState === 'visible') return;
+    const notification = new Notification(title, { body, icon, badge: icon, vibrate: [200, 100, 200], tag: 'innovators-erp' });
+    notification.onclick = () => { window.focus(); notification.close(); };
+}
+
+async function checkForNewNotifications() {
+    if (!currentUser) return;
+    try {
+        const notifications = await getCollection(COLLECTIONS.notifications);
+        const relevant = filterNotificationsForUser(notifications);
+        const unread = relevant.filter(n => !n.read);
+        updateNotificationBadge(unread.length);
+        const newOnes = unread.filter(n => new Date(n.date + 'T00:00:00') > lastNotificationCheck);
+        if (newOnes.length > 0) newOnes.forEach(n => showBrowserNotification(n.title, n.message));
+        lastNotificationCheck = new Date();
+    } catch (e) { console.error("Notification check failed", e); }
+}
+
+function updateNotificationBadge(count) {
+    const badge = document.getElementById('notificationBadge');
+    if (badge) {
+        badge.textContent = count > 9 ? '9+' : count;
+        badge.classList.toggle('hidden', count === 0);
+    }
+}
+
+function filterNotificationsForUser(notifications) {
+    const role = currentUser.role;
+    return notifications.filter(n => {
+        if (n.targetType === 'all') return true;
+        if (role === 'teacher' && n.targetType === 'teachers') return true;
+        if (role === 'student' && (n.targetType === 'students' || n.targetType === 'class' || n.targetType === 'student')) return true;
+        if (role === 'parent' && n.targetType === 'parent' && n.targetId === currentUser.refId) return true;
+        if (role === 'admin' || role === 'director') return true;
+        return false;
+    });
+}
+
+function startNotificationPolling() {
+    if (notificationInterval) clearInterval(notificationInterval);
+    notificationInterval = setInterval(checkForNewNotifications, 30000);
+    checkForNewNotifications();
+}
+
+// ==================== SIMPLE IN‑MEMORY CACHE ====================
+const cache = { users: null, teachers: null, students: null, parents: null, fees: null, attendance: null, leaves: null, materials: null, notifications: null, salaries: null, expenses: null, results: null };
+function clearCache(cn) { cache[cn] = null; }
+function clearAllCache() { for (let k in cache) cache[k] = null; }
+async function getCachedCollection(cn) {
+    if (cache[cn]) return cache[cn];
+    const snapshot = await db.collection(cn).get();
+    const data = snapshot.docs.map(doc => { let d = doc.data(); if (d.id && !isNaN(d.id)) d.id = Number(d.id); return d; });
+    cache[cn] = data;
+    return data;
+}
+async function getCollection(cn) { return getCachedCollection(cn); }
+async function getDocument(cn, id) { const all = await getCollection(cn); return all.find(item => item.id == id) || null; }
+async function addDocument(cn, data) {
+    if (data.id) await db.collection(cn).doc(String(data.id)).set(data);
+    else { const docRef = await db.collection(cn).add(data); data.id = docRef.id; await docRef.update({ id: docRef.id }); }
+    clearCache(cn); return data;
+}
+async function updateDocument(cn, id, data) { await db.collection(cn).doc(String(id)).update(data); clearCache(cn); }
+async function deleteDocument(cn, id) { await db.collection(cn).doc(String(id)).delete(); clearCache(cn); }
+async function setDocument(cn, id, data) { await db.collection(cn).doc(String(id)).set(data); clearCache(cn); }
+async function getNextId(cn) { const all = await getCollection(cn); return all.reduce((max, item) => Math.max(max, Number(item.id) || 0), 0) + 1; }
+async function runBatchedWrites(writes) {
+    const BATCH_LIMIT = 500;
+    for (let i = 0; i < writes.length; i += BATCH_LIMIT) {
+        const batch = db.batch();
+        const chunk = writes.slice(i, i + BATCH_LIMIT);
+        chunk.forEach(({ ref, data, type }) => { if (type === 'set') batch.set(ref, data); else if (type === 'update') batch.update(ref, data); else if (type === 'delete') batch.delete(ref); });
+        await batch.commit();
+    }
+    clearAllCache();
+}
+
+// ==================== COLLECTIONS ====================
+const COLLECTIONS = { users: 'users', teachers: 'teachers', students: 'students', parents: 'parents', fees: 'fees', attendance: 'attendance', leaves: 'leaves', materials: 'materials', notifications: 'notifications', salaries: 'salaries', expenses: 'expenses', results: 'results' };
+
+// ==================== DEFAULT ADMIN & DIRECTOR CREATION ====================
+async function ensureAdminExists() {
+    const users = await getCollection(COLLECTIONS.users);
+    if (!users.some(u => u.role === 'admin')) {
+        const adminId = await getNextId(COLLECTIONS.users);
+        await db.collection(COLLECTIONS.users).doc(String(adminId)).set({ id: adminId, username: 'admin', password: 'admin123', role: 'admin', refId: adminId });
+        clearCache(COLLECTIONS.users);
+    }
+    if (!users.some(u => u.role === 'director')) {
+        const dirId = await getNextId(COLLECTIONS.users);
+        await db.collection(COLLECTIONS.users).doc(String(dirId)).set({ id: dirId, username: 'director', password: 'director123', role: 'director', refId: dirId });
+        clearCache(COLLECTIONS.users);
+    }
+}
+
+// ==================== ENSURE EVERY STUDENT HAS A PARENT USER ====================
+async function ensureAllParentsExist() {
+    const students = await getCollection(COLLECTIONS.students);
+    const parents = await getCollection(COLLECTIONS.parents);
+    const users = await getCollection(COLLECTIONS.users);
+    let maxParentId = parents.reduce((max, p) => Math.max(max, Number(p.id) || 0), 0);
+    let maxUserId = users.reduce((max, u) => Math.max(max, Number(u.id) || 0), 0);
+    let writes = [];
+    for (let student of students) {
+        const existingParent = parents.find(p => p.childId === student.id);
+        if (!existingParent) {
+            let parentUsername = 'PAR' + (student.username ? student.username.replace('INNO','') : String(student.id).padStart(5,'0'));
+            let finalParentUser = parentUsername; let counter = 1;
+            while (users.some(u => u.username === finalParentUser) || parents.some(p => p.username === finalParentUser) || writes.some(w => w.data && w.data.username === finalParentUser)) { finalParentUser = parentUsername + counter; counter++; }
+            const newParent = { id: ++maxParentId, name: student.fatherName || 'Parent', phone: student.contacts || '', childId: student.id, username: finalParentUser };
+            writes.push({ ref: db.collection(COLLECTIONS.parents).doc(String(newParent.id)), data: newParent, type: 'set' });
+            const parentUser = { id: ++maxUserId, username: finalParentUser, password: 'pass' + student.id, role: 'parent', refId: newParent.id };
+            writes.push({ ref: db.collection(COLLECTIONS.users).doc(String(parentUser.id)), data: parentUser, type: 'set' });
+            users.push(parentUser);
+        }
+    }
+    if (writes.length > 0) { await runBatchedWrites(writes); console.log(`Created ${writes.length/2} missing parent accounts.`); }
+}
+
+// ==================== CURRENT SESSION ====================
+let currentUser = null;
+function setCurrentUser(u) { sessionStorage.setItem('tig_current', JSON.stringify(u)); currentUser = u; }
+function loadSession() { let s = sessionStorage.getItem('tig_current'); if (s) { currentUser = JSON.parse(s); return true; } return false; }
+
+// ==================== AUTH ====================
+window.handleLogin = async function() {
+    let role = document.getElementById('loginRole').value;
+    let username = document.getElementById('loginUser').value.trim();
+    let password = document.getElementById('loginPass').value.trim();
+    await ensureAdminExists();
+    let users = await getCollection(COLLECTIONS.users);
+    let user = users.find(u => u.username === username && u.password === password && u.role === role);
+    if (user) {
+        setCurrentUser(user);
+        document.getElementById('loginContainer').classList.add('hidden');
+        document.getElementById('appContainer').classList.remove('hidden');
+        renderSidebar();
+        await requestNotificationPermission();
+        startNotificationPolling();
+        if (role === 'director') showDirectorDashboard();
+        else if (role === 'admin') showDashboard();
+        else if (role === 'teacher') showTeacherDashboard();
+        else if (role === 'student') showStudentProfile();
+        else if (role === 'parent') showParentDashboard();
+    } else { document.getElementById('loginError').innerText = 'Invalid credentials'; }
+};
+
+window.logout = function() {
+    if (notificationInterval) clearInterval(notificationInterval);
+    sessionStorage.removeItem('tig_current');
+    currentUser = null;
+    document.getElementById('loginContainer').classList.remove('hidden');
+    document.getElementById('appContainer').classList.add('hidden');
+    document.getElementById('sidebar')?.classList.remove('open');
+    document.getElementById('sidebarOverlay')?.classList.remove('open');
+};
+
+// ==================== TOGGLE SIDEBAR ====================
+window.toggleSidebar = function() { document.getElementById('sidebar')?.classList.toggle('open'); document.getElementById('sidebarOverlay')?.classList.toggle('open'); };
+window.addEventListener('resize', function() { if (window.innerWidth >= 1024) { document.getElementById('sidebar')?.classList.remove('open'); document.getElementById('sidebarOverlay')?.classList.remove('open'); } });
+
+// ==================== PASSWORD TOGGLE ====================
+const togglePassword = document.getElementById('togglePassword');
+const passwordInput = document.getElementById('loginPass');
+if (togglePassword && passwordInput) { togglePassword.addEventListener('click', function() { const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password'; passwordInput.setAttribute('type', type); this.classList.toggle('fa-eye'); this.classList.toggle('fa-eye-slash'); }); }
+
+// ==================== RENDER SIDEBAR ====================
+function renderSidebar() {
+    if (!currentUser) return;
+    let menuHtml = '';
+    const role = currentUser.role;
+    const menus = {
+        director: [ { icon:'fa-chart-line', label:'Dashboard', action:'showDirectorDashboard' }, { icon:'fa-users-cog', label:'Manage Users', action:'showDirectorUsers' }, { icon:'fa-key', label:'Change Passwords', action:'showDirectorChangePassword' }, { icon:'fa-file-export', label:'Import/Export', action:'showDirectorImportExport' }, { icon:'fa-user-cog', label:'Profile', action:'showProfile' } ],
+        admin: [ { icon:'fa-chart-pie', label:'Dashboard', action:'showDashboard' }, { icon:'fa-users', label:'Students', action:'showStudents' }, { icon:'fa-chalkboard-teacher', label:'Teachers', action:'showTeachers' }, { icon:'fa-user-friends', label:'Parents', action:'showParents' }, { icon:'fa-wallet', label:'Fee Ledger', action:'showFeeLedger' }, { icon:'fa-money-bill', label:'Salaries', action:'showSalaries' }, { icon:'fa-coins', label:'Expenses', action:'showExpenses' }, { icon:'fa-calendar-check', label:'Attendance', action:'showAttendanceOverview' }, { icon:'fa-clock', label:'Leave Requests', action:'showLeaveRequests' }, { icon:'fa-upload', label:'Materials', action:'showMaterials' }, { icon:'fa-star', label:'Results', action:'showAllResults' }, { icon:'fa-envelope', label:'Notifications', action:'showNotifications' }, { icon:'fa-print', label:'Print Student Logins', action:'printAllStudentCredentials' }, { icon:'fa-print', label:'Print Teacher Logins', action:'printAllTeacherCredentials' }, { icon:'fa-print', label:'Print Parent Logins', action:'printAllParentCredentials' }, { icon:'fa-user-cog', label:'Profile', action:'showProfile' } ],
+        teacher: [ { icon:'fa-home', label:'Dashboard', action:'showTeacherDashboard' }, { icon:'fa-users-cog', label:'Manage Students', action:'showManageStudents' }, { icon:'fa-calendar-alt', label:'Mark Attendance', action:'showMarkAttendance' }, { icon:'fa-clock', label:'Approve Student Leaves', action:'showApproveLeaves' }, { icon:'fa-calendar-plus', label:'Apply Leave', action:'showTeacherApplyLeave' }, { icon:'fa-upload', label:'Upload Material', action:'showUploadMaterial' }, { icon:'fa-star', label:'Upload Results', action:'showUploadResults' }, { icon:'fa-bell', label:'Notifications', action:'showNotifications' }, { icon:'fa-money-check', label:'My Salary', action:'showMySalary' }, { icon:'fa-id-card', label:'Profile', action:'showProfile' } ],
+        student: [ { icon:'fa-user', label:'My Profile', action:'showStudentProfile' }, { icon:'fa-calendar-check', label:'My Attendance', action:'showMyAttendance' }, { icon:'fa-clock', label:'Apply Leave', action:'showApplyLeave' }, { icon:'fa-book-open', label:'Materials', action:'showStudentMaterials' }, { icon:'fa-star', label:'My Results', action:'showStudentResults' }, { icon:'fa-file-invoice', label:'Fee Challan', action:'showStudentFees' }, { icon:'fa-chalkboard', label:'My Teachers', action:'showMyTeachers' }, { icon:'fa-bell', label:'Notifications', action:'showNotifications' }, { icon:'fa-id-card', label:'Profile', action:'showProfile' } ],
+        parent: [ { icon:'fa-users', label:'My Children', action:'showParentDashboard' }, { icon:'fa-calendar-check', label:'Attendance', action:'showParentAttendance' }, { icon:'fa-star', label:'Results', action:'showParentResults' }, { icon:'fa-file-invoice', label:'Fee Ledger', action:'showParentFees' }, { icon:'fa-bell', label:'Notifications', action:'showNotifications' }, { icon:'fa-id-card', label:'Profile', action:'showProfile' } ]
+    };
+    (menus[role] || []).forEach(item => { menuHtml += `<div onclick="window.${item.action}(); if(window.innerWidth<1024) window.toggleSidebar();" class="sidebar-pill"><i class="fas ${item.icon}"></i> <span>${item.label}</span></div>`; });
+    document.getElementById('sidebarMenu').innerHTML = menuHtml;
+}
+
+// ==================== MODAL ====================
+window.openModal = function(contentHtml, saveCallback) {
+    document.getElementById('modalContent').innerHTML = contentHtml;
+    document.getElementById('globalModal').classList.remove('hidden');
+    window.modalSaveCallback = saveCallback;
+    document.getElementById('modalSaveBtn').onclick = function() { if(window.modalSaveCallback) window.modalSaveCallback(); closeModal(); };
+};
+window.closeModal = function() { document.getElementById('globalModal').classList.add('hidden'); };
+
+// ---------- DIRECTOR MODULE ----------
+window.showDirectorDashboard = async function() {
+    let students = await getCollection(COLLECTIONS.students); let teachers = await getCollection(COLLECTIONS.teachers); let fees = await getCollection(COLLECTIONS.fees); let expenses = await getCollection(COLLECTIONS.expenses); let salaries = await getCollection(COLLECTIONS.salaries);
+    let paidFees = fees.filter(f => f.status === 'paid').reduce((a,b) => a + b.amount, 0); let totalExpense = expenses.reduce((a,b) => a + (b.amount||0), 0); let totalSalary = salaries.reduce((a,b) => a + (b.amount||0), 0); let profit = paidFees - (totalExpense + totalSalary);
+    document.getElementById('mainContent').innerHTML = `<h2 class="text-4xl font-extrabold mb-8 heading-font">📊 Director Dashboard</h2><div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"><div class="glass-card p-6 rounded-2xl"><i class="fas fa-wallet text-3xl text-cyan-400 mb-3"></i><p class="text-4xl font-bold">PKR ${paidFees}</p><p class="text-cyan-300">Collected Fees</p></div><div class="glass-card p-6 rounded-2xl"><i class="fas fa-chart-bar text-3xl text-cyan-400 mb-3"></i><p class="text-4xl font-bold">PKR ${profit}</p><p class="text-cyan-300">Profit</p></div><div class="glass-card p-6 rounded-2xl"><i class="fas fa-users text-3xl text-cyan-400 mb-3"></i><p class="text-4xl font-bold">${students.length}</p><p class="text-cyan-300">Total Students</p></div></div><div class="glass-card p-6 rounded-2xl"><canvas id="directorChart"></canvas></div>`;
+    setTimeout(() => { let ctx = document.getElementById('directorChart')?.getContext('2d'); if(ctx) new Chart(ctx, { type:'bar', data: { labels: ['Fees Collected','Expenses','Salaries'], datasets: [{ label:'PKR', data: [paidFees, totalExpense, totalSalary], backgroundColor: ['#34d399','#f87171','#fbbf24'] }] } }); },100);
+};
+window.showDirectorUsers = async function() {
+    let users = await getCollection(COLLECTIONS.users); let teachers = await getCollection(COLLECTIONS.teachers); let students = await getCollection(COLLECTIONS.students); let parents = await getCollection(COLLECTIONS.parents);
+    let html = `<h2 class="text-3xl font-extrabold mb-6">👥 All Users</h2><div class="overflow-x-auto glass-card p-4"><table class="w-full table-premium"><thead><tr><th>Username</th><th>Role</th><th>Name/Ref</th><th>Actions</th></tr></thead><tbody>`;
+    for (let u of users) {
+        let detail = ''; if (u.role==='teacher') { let t = teachers.find(x=>x.id===u.refId); detail = t?.name || ''; } else if (u.role==='student') { let s = students.find(x=>x.id===u.refId); detail = s?.studentName || ''; } else if (u.role==='parent') { let p = parents.find(x=>x.id===u.refId); detail = p?.name || ''; } else detail = u.role;
+        html += `<tr><td>${u.username}</td><td>${u.role}</td><td>${detail}</td><td><button onclick="window.directorResetPassword('${u.id}')" class="px-3 py-1 bg-cyan-600/50 rounded-lg">Reset Password</button></td></tr>`;
+    }
+    html += '</tbody></table></div>'; document.getElementById('mainContent').innerHTML = html;
+};
+window.directorResetPassword = async function(userId) { let newPass = prompt('Enter new password:'); if (!newPass) return; let users = await getCollection(COLLECTIONS.users); let user = users.find(u => u.id == userId); if (user) { user.password = newPass; await updateDocument(COLLECTIONS.users, user.id, user); alert('Password updated'); showDirectorUsers(); } };
+window.showDirectorChangePassword = async function() { document.getElementById('mainContent').innerHTML = `<h2 class="text-3xl font-extrabold mb-6">🔑 Change User Password</h2><div class="glass-card p-6 max-w-lg"><input id="searchUserInput" placeholder="Search by username or name" class="w-full p-3 input-premium rounded-xl mb-4"><button onclick="window.searchUsersForDirector()" class="px-6 py-3 premium-gradient rounded-xl text-white font-bold">Search</button><div id="searchResults" class="mt-6"></div></div>`; };
+window.searchUsersForDirector = async function() {
+    let term = document.getElementById('searchUserInput').value.toLowerCase(); let users = await getCollection(COLLECTIONS.users); let teachers = await getCollection(COLLECTIONS.teachers); let students = await getCollection(COLLECTIONS.students); let parents = await getCollection(COLLECTIONS.parents);
+    let filtered = users.filter(u => { if (u.username.toLowerCase().includes(term)) return true; if (u.role==='teacher') { let t = teachers.find(x=>x.id===u.refId); return t?.name?.toLowerCase().includes(term); } if (u.role==='student') { let s = students.find(x=>x.id===u.refId); return s?.studentName?.toLowerCase().includes(term); } if (u.role==='parent') { let p = parents.find(x=>x.id===u.refId); return p?.name?.toLowerCase().includes(term); } return false; });
+    let html = ''; filtered.forEach(u => { let detail = ''; if (u.role==='teacher') detail = teachers.find(t=>t.id===u.refId)?.name || ''; else if (u.role==='student') detail = students.find(s=>s.id===u.refId)?.studentName || ''; else if (u.role==='parent') detail = parents.find(p=>p.id===u.refId)?.name || ''; html += `<div class="flex justify-between items-center p-3 border-b border-white/10"><span><b>${u.username}</b> (${u.role}) - ${detail}</span><button onclick="window.directorResetPassword('${u.id}')" class="px-3 py-1 bg-cyan-600/50 rounded-lg">Reset</button></div>`; });
+    document.getElementById('searchResults').innerHTML = html || '<p class="text-slate-400">No users found.</p>';
+};
+window.showDirectorImportExport = function() { document.getElementById('mainContent').innerHTML = `<h2 class="text-3xl font-extrabold mb-6">📁 Import/Export (Director)</h2><div class="glass-card p-8 rounded-2xl space-y-4 max-w-lg"><button onclick="window.exportStudentsJSON()" class="w-full py-4 bg-cyan-600/20 hover:bg-cyan-600/40 rounded-xl border border-cyan-500/30 flex items-center gap-3 px-6"><i class="fas fa-download"></i> Export students JSON</button><button onclick="window.exportTeachersJSON()" class="w-full py-4 bg-cyan-600/20 hover:bg-cyan-600/40 rounded-xl border border-cyan-500/30 flex items-center gap-3 px-6"><i class="fas fa-download"></i> Export teachers JSON</button><div class="pt-4 border-t"><p class="mb-3 text-sm">Import students JSON</p><input type="file" id="importStudentFile" accept=".json" class="block w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-cyan-600/20 file:text-cyan-300"><button onclick="window.importStudentsFromJSON()" class="mt-3 px-6 py-2 premium-gradient rounded-xl text-white font-bold">Upload students</button></div><div class="pt-4 border-t"><p class="mb-3 text-sm">Import teachers JSON</p><input type="file" id="importTeacherFile" accept=".json" class="block w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-cyan-600/20 file:text-cyan-300"><button onclick="window.importTeachersFromJSON()" class="mt-3 px-6 py-2 premium-gradient rounded-xl text-white font-bold">Upload teachers</button></div></div>`; };
+
+// ==================== ADMIN DASHBOARD ====================
+window.showDashboard = async function() {
+    let students = await getCollection(COLLECTIONS.students); let teachers = await getCollection(COLLECTIONS.teachers); let fees = await getCollection(COLLECTIONS.fees);
+    let paid = fees.filter(f => f.status === 'paid').reduce((a, b) => a + b.amount, 0); let pending = fees.filter(f => f.status === 'unpaid').reduce((a, b) => a + (b.amount + (b.fine||0)), 0);
+    let html = `<h2 class="text-4xl font-extrabold mb-8 bg-gradient-to-r from-cyan-200 via-blue-100 to-blue-100 bg-clip-text text-transparent heading-font">📊 Admin dashboard</h2><div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8"><div class="glass-card p-6 rounded-2xl border border-cyan-500/10 premium-hover"><i class="fas fa-user-graduate text-3xl text-cyan-400 mb-3"></i><p class="text-4xl font-bold text-white">${students.length}</p><p class="text-cyan-300 text-xs uppercase tracking-wider font-semibold">total students</p></div><div class="glass-card p-6 rounded-2xl border border-cyan-500/10 premium-hover"><i class="fas fa-chalkboard-teacher text-3xl text-cyan-400 mb-3"></i><p class="text-4xl font-bold text-white">${teachers.length}</p><p class="text-cyan-300 text-xs uppercase tracking-wider font-semibold">teachers</p></div><div class="glass-card p-6 rounded-2xl border border-cyan-500/10 premium-hover"><i class="fas fa-rupee-sign text-3xl text-cyan-400 mb-3"></i><p class="text-4xl font-bold text-white">PKR ${paid}</p><p class="text-cyan-300 text-xs uppercase tracking-wider font-semibold">collected fees</p></div><div class="glass-card p-6 rounded-2xl border border-cyan-500/10 premium-hover"><i class="fas fa-clock text-3xl text-cyan-400 mb-3"></i><p class="text-4xl font-bold text-white">PKR ${pending}</p><p class="text-cyan-300 text-xs uppercase tracking-wider font-semibold">pending fees</p></div></div><div class="glass-card p-6 rounded-2xl border border-cyan-500/10"><canvas id="feeChart" width="400" height="200"></canvas></div>`;
+    document.getElementById('mainContent').innerHTML = html;
+    setTimeout(() => { let ctx = document.getElementById('feeChart')?.getContext('2d'); if (ctx) new Chart(ctx, { type:'bar', data: { labels: ['Paid', 'Pending'], datasets: [{ label:'PKR', data: [paid, pending], backgroundColor: ['#34d399','#f87171'] }] } }); }, 100);
+};
+
+// ==================== PRINT CREDENTIALS ====================
+function printCredentials(data, title, nameKey, idKey, userKey, passKey) {
+    const { jsPDF } = window.jspdf; const doc = new jsPDF(); let y = 20;
+    doc.setFontSize(18); doc.text(title, 10, y); y += 15; doc.setFontSize(10); doc.setTextColor(100, 100, 255);
+    doc.text('Name', 10, y); doc.text('ID', 70, y); doc.text('Username', 110, y); doc.text('Password', 160, y); y += 8; doc.setTextColor(0, 0, 0);
+    data.forEach((item, index) => { if (y > 280) { doc.addPage(); y = 20; doc.setFontSize(10); doc.setTextColor(100,100,255); doc.text('Name',10,y); doc.text('ID',70,y); doc.text('Username',110,y); doc.text('Password',160,y); y+=8; doc.setTextColor(0,0,0); } doc.text(item[nameKey] || '', 10, y); doc.text(String(item[idKey] || ''), 70, y); doc.text(item[userKey] || '', 110, y); doc.text(item[passKey] || '', 160, y); y += 7; });
+    doc.save(title.replace(/\s/g, '_') + '.pdf');
+}
+window.printAllStudentCredentials = async function() { let students = await getCollection(COLLECTIONS.students); printCredentials(students, 'Student Login Credentials', 'studentName', 'srNo', 'username', 'password'); };
+window.printAllTeacherCredentials = async function() { let teachers = await getCollection(COLLECTIONS.teachers); printCredentials(teachers, 'Teacher Login Credentials', 'name', 'empId', 'username', 'password'); };
+window.printAllParentCredentials = async function() { let parents = await getCollection(COLLECTIONS.parents); let students = await getCollection(COLLECTIONS.students); let enriched = parents.map(p => { let s = students.find(st => st.id === p.childId); return { ...p, childName: s?.studentName || '' }; }); printCredentials(enriched, 'Parent Login Credentials', 'name', 'childId', 'username', 'password'); };
+window.printSingleStudentCredential = async function(studentId) { let student = await getDocument(COLLECTIONS.students, studentId); if(!student) return; const { jsPDF } = window.jspdf; const doc = new jsPDF(); doc.setFontSize(22); doc.text('Student Login', 20, 30); doc.setFontSize(12); doc.text(`Name: ${student.studentName}`, 20, 50); doc.text(`ID: ${student.srNo}`, 20, 60); doc.text(`Username: ${student.username}`, 20, 70); doc.text(`Password: ${student.password}`, 20, 80); doc.save(`Student_${student.srNo}_login.pdf`); };
+window.printSingleTeacherCredential = async function(teacherId) { let teacher = await getDocument(COLLECTIONS.teachers, teacherId); if(!teacher) return; const { jsPDF } = window.jspdf; const doc = new jsPDF(); doc.setFontSize(22); doc.text('Teacher Login', 20, 30); doc.setFontSize(12); doc.text(`Name: ${teacher.name}`, 20, 50); doc.text(`ID: ${teacher.empId}`, 20, 60); doc.text(`Username: ${teacher.username}`, 20, 70); doc.text(`Password: ${teacher.password || 'pass123'}`, 20, 80); doc.save(`Teacher_${teacher.empId}_login.pdf`); };
+window.printSingleParentCredential = async function(parentId) { let parent = await getDocument(COLLECTIONS.parents, parentId); if(!parent) return; const { jsPDF } = window.jspdf; const doc = new jsPDF(); let users = await getCollection(COLLECTIONS.users); let user = users.find(u => u.role === 'parent' && u.refId === parent.id); let pass = user ? user.password : 'pass' + parent.childId; doc.setFontSize(22); doc.text('Parent Login', 20, 30); doc.setFontSize(12); doc.text(`Name: ${parent.name}`, 20, 50); doc.text(`Child ID: ${parent.childId}`, 20, 60); doc.text(`Username: ${parent.username}`, 20, 70); doc.text(`Password: ${pass}`, 20, 80); doc.save(`Parent_${parent.id}_login.pdf`); };
+
+// ==================== EXPENSES with report generation ====================
+window.showExpenses = async function() { renderExpenses(); };
+async function renderExpenses() {
+    let expenses = await getCollection(COLLECTIONS.expenses);
+    let html = `<h2 class="text-3xl font-extrabold mb-6 heading-font">💰 Expenses</h2><div class="flex flex-wrap gap-3 mb-6"><button onclick="window.openAddExpenseModal()" class="px-6 py-3 premium-gradient rounded-xl text-white font-bold">+ Add expense</button><input type="date" id="expStartDate" class="p-3 input-premium rounded-xl"><input type="date" id="expEndDate" class="p-3 input-premium rounded-xl"><button onclick="window.generateExpenseReport()" class="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 rounded-xl text-white font-bold">📄 Generate Report</button></div><div class="overflow-x-auto glass-card rounded-2xl p-4"><table class="w-full table-premium"><thead><tr><th>Title</th><th>Amount</th><th>Date</th><th>Category</th><th>Description</th><th>Actions</th></tr></thead><tbody>`;
+    expenses.forEach(e => { html += `<tr><td>${e.title}</td><td>${e.amount}</td><td>${e.date}</td><td>${e.category}</td><td>${e.description||''}</td><td><i class="fas fa-edit text-cyan-400 cursor-pointer mr-3" onclick="window.editExpense(${e.id})"></i><i class="fas fa-trash text-rose-400 cursor-pointer" onclick="window.deleteExpense(${e.id})"></i></td></tr>`; });
+    html += '</tbody></table></div>'; document.getElementById('mainContent').innerHTML = html;
+}
+window.generateExpenseReport = async function() {
+    let start = document.getElementById('expStartDate').value; let end = document.getElementById('expEndDate').value; if (!start || !end) { alert('Select both dates'); return; }
+    let expenses = await getCollection(COLLECTIONS.expenses); let filtered = expenses.filter(e => e.date >= start && e.date <= end);
+    const { jsPDF } = window.jspdf; const doc = new jsPDF(); doc.setFontSize(18); doc.text('Expense Report', 14, 20); doc.setFontSize(12); doc.text(`From ${start} to ${end}`, 14, 30);
+    let y = 45; doc.setFontSize(10); doc.text('Title', 14, y); doc.text('Amount', 80, y); doc.text('Date', 120, y); doc.text('Category', 160, y); y += 7; let total = 0;
+    filtered.forEach(e => { if (y > 270) { doc.addPage(); y = 20; } doc.text(e.title, 14, y); doc.text(String(e.amount), 80, y); doc.text(e.date, 120, y); doc.text(e.category, 160, y); y += 7; total += e.amount; });
+    y += 10; doc.setFontSize(12); doc.text(`Total: PKR ${total}`, 14, y); doc.save(`Expense_Report_${start}_to_${end}.pdf`);
+};
+window.openAddExpenseModal = function() {
+    let form = `<h3 class="text-2xl font-bold mb-6">➕ New expense</h3><div class="grid grid-cols-2 gap-4"><input id="expTitle" placeholder="Title" class="p-3 input-premium rounded-xl col-span-2"><input id="expAmount" type="number" placeholder="Amount" class="p-3 input-premium rounded-xl"><input id="expDate" type="date" value="${new Date().toISOString().split('T')[0]}" class="p-3 input-premium rounded-xl"><select id="expCategory" class="p-3 input-premium rounded-xl"><option value="utilities">Utilities</option><option value="supplies">Supplies</option><option value="maintenance">Maintenance</option><option value="other">Other</option></select><textarea id="expDesc" placeholder="Description" class="p-3 input-premium rounded-xl col-span-2"></textarea></div>`;
+    window.openModal(form, async function() { let newExp = { id: await getNextId(COLLECTIONS.expenses), title: document.getElementById('expTitle').value, amount: parseInt(document.getElementById('expAmount').value)||0, date: document.getElementById('expDate').value, category: document.getElementById('expCategory').value, description: document.getElementById('expDesc').value, paidBy: currentUser.username }; await addDocument(COLLECTIONS.expenses, newExp); renderExpenses(); });
+};
+window.editExpense = async function(id) {
+    let e = (await getCollection(COLLECTIONS.expenses)).find(x=>x.id===id); if(!e) return;
+    let form = `<h3>✏️ Edit expense</h3><div class="grid grid-cols-2 gap-4"><input id="expTitle" value="${e.title}" class="p-3 input-premium rounded-xl col-span-2"><input id="expAmount" type="number" value="${e.amount}" class="p-3 input-premium rounded-xl"><input id="expDate" type="date" value="${e.date}" class="p-3 input-premium rounded-xl"><select id="expCategory" class="p-3 input-premium rounded-xl">${['utilities','supplies','maintenance','other'].map(c=>`<option ${e.category===c?'selected':''}>${c}</option>`).join('')}</select><textarea id="expDesc" class="p-3 input-premium rounded-xl col-span-2">${e.description||''}</textarea></div>`;
+    window.openModal(form, async function(){ e.title=document.getElementById('expTitle').value; e.amount=parseInt(document.getElementById('expAmount').value)||0; e.date=document.getElementById('expDate').value; e.category=document.getElementById('expCategory').value; e.description=document.getElementById('expDesc').value; await updateDocument(COLLECTIONS.expenses,e.id,e); renderExpenses(); });
+};
+window.deleteExpense = async function(id) { if(confirm('Delete?')){ await deleteDocument(COLLECTIONS.expenses,id); renderExpenses(); } };
+
+// ==================== STUDENTS with toggle fee columns ====================
+window.showStudents = async function() { renderStudentsList(); };
+async function renderStudentsList() {
+    let students = await getCollection(COLLECTIONS.students);
+    students.sort((a,b) => (parseInt(a.srNo) || 0) - (parseInt(b.srNo) || 0));
+    let html = `<h2 class="text-3xl font-extrabold mb-6 heading-font">📋 Students</h2>
+    <div class="mb-6 flex flex-wrap gap-3"><input id="searchStudent" placeholder="Search" class="p-3 input-premium rounded-xl flex-1"><button onclick="window.filterStudents()" class="px-6 py-3 premium-gradient rounded-xl text-white font-bold">🔍</button><button onclick="window.openAddStudentModal()" class="px-6 py-3 bg-emerald-600 rounded-xl">+ Add</button><button onclick="window.printAllStudentCredentials()" class="px-6 py-3 bg-cyan-600 rounded-xl">🖨️ Print All</button></div>
+    <div class="overflow-x-auto glass-card rounded-2xl p-4">
+        <table class="w-full table-premium" id="studentsTable">
+            <thead>
+                <tr>
+                    <th>Sr#</th><th>Student</th><th>Father</th><th>Class</th>
+                    <th>Monthly Fee <i class="fas fa-eye text-cyan-400 cursor-pointer ml-2" onclick="window.toggleFeeColumns()" title="Toggle fee columns"></i></th>
+                    <th class="fee-col-pending">Pending</th><th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="studentTableBody">`;
+    if (students.length === 0) html += `<tr><td colspan="7" class="text-center py-8">No students</td></tr>`;
+    else {
+        students.forEach(s => {
+            html += `<tr id="student-row-${s.id}"><td>${s.srNo}</td><td>${s.studentName}</td><td>${s.fatherName}</td><td>${s.class}</td>
+                <td class="fee-col-monthly"><i class="fas fa-chevron-down text-cyan-400 cursor-pointer mr-2" onclick="window.toggleFeeHistory(${s.id})"></i>${s.monthlyFee}</td>
+                <td class="fee-col-pending">${s.pendingBal}</td>
+                <td><i class="fas fa-print text-green-400 cursor-pointer mr-2" onclick="window.printSingleStudentCredential(${s.id})"></i><i class="fas fa-edit text-cyan-400 cursor-pointer mr-2" onclick="window.editStudent(${s.id})"></i><i class="fas fa-trash text-rose-400 cursor-pointer" onclick="window.deleteStudent(${s.id})"></i></td>
+            </tr>`;
+        });
+    }
+    html += '</tbody></table></div>';
+    document.getElementById('mainContent').innerHTML = html;
+    document.getElementById('studentsTable')?.classList.remove('hide-fee-columns');
+}
+window.toggleFeeColumns = function() {
+    const table = document.getElementById('studentsTable');
+    if (table) table.classList.toggle('hide-fee-columns');
+};
+window.toggleFeeHistory = async function(studentId) {
+    let existingRow = document.getElementById(`fee-history-${studentId}`);
+    if (existingRow) { existingRow.remove(); return; }
+    let fees = (await getCollection(COLLECTIONS.fees)).filter(f => f.studentId === studentId);
+    let row = document.getElementById(`student-row-${studentId}`);
+    if (!row) return;
+    let newRow = document.createElement('tr');
+    newRow.id = `fee-history-${studentId}`;
+    newRow.className = 'fee-detail-row';
+    let feeHtml = fees.map(f => `<div class="p-2"><span>${f.month}: ${f.amount} (${f.status}) fine:${f.fine||0}</span></div>`).join('');
+    newRow.innerHTML = `<td colspan="7" class="p-2 bg-slate-800/30"><div class="text-xs text-cyan-200">Fee History: ${feeHtml || 'No records'}</div></td>`;
+    row.parentNode.insertBefore(newRow, row.nextSibling);
+};
+window.filterStudents = async function() {
+    let search = document.getElementById('searchStudent')?.value.toLowerCase().replace(/\s+/g, '') || '';
+    let students = await getCollection(COLLECTIONS.students);
+    students = students.filter(s => s.studentName.toLowerCase().replace(/\s+/g, '').includes(search) || s.fatherName.toLowerCase().replace(/\s+/g, '').includes(search));
+    students.sort((a,b) => (parseInt(a.srNo) || 0) - (parseInt(b.srNo) || 0));
+    let tbody = document.getElementById('studentTableBody');
+    if (tbody) {
+        tbody.innerHTML = '';
+        if (students.length === 0) tbody.innerHTML = `<tr><td colspan="7" class="text-center py-8">No matching students</td></tr>`;
+        else {
+            students.forEach(s => {
+                tbody.innerHTML += `<tr id="student-row-${s.id}"><td>${s.srNo}</td><td>${s.studentName}</td><td>${s.fatherName}</td><td>${s.class}</td>
+                    <td class="fee-col-monthly"><i class="fas fa-chevron-down text-cyan-400 cursor-pointer mr-2" onclick="window.toggleFeeHistory(${s.id})"></i>${s.monthlyFee}</td>
+                    <td class="fee-col-pending">${s.pendingBal}</td>
+                    <td><i class="fas fa-print text-green-400 cursor-pointer mr-2" onclick="window.printSingleStudentCredential(${s.id})"></i><i class="fas fa-edit text-cyan-400 cursor-pointer mr-2" onclick="window.editStudent(${s.id})"></i><i class="fas fa-trash text-rose-400 cursor-pointer" onclick="window.deleteStudent(${s.id})"></i></td>
+                </tr>`;
+            });
+        }
+    }
+};
+window.openAddStudentModal = function() {
+    let form = `<h3 class="text-2xl font-bold mb-6 heading-font">➕ New student</h3><div class="grid grid-cols-2 gap-4"><input id="sName" placeholder="Student name" class="p-3 input-premium rounded-xl"><input id="sFather" placeholder="Father name" class="p-3 input-premium rounded-xl"><input id="sContacts" placeholder="Contacts" class="p-3 input-premium rounded-xl"><input id="sClass" placeholder="Class" class="p-3 input-premium rounded-xl"><input id="sFee" placeholder="Monthly Fee" type="number" class="p-3 input-premium rounded-xl"><input id="sPending" placeholder="Pending Balance" value="0" class="p-3 input-premium rounded-xl"><input id="sAnnual" placeholder="Annual Sub" value="0" class="p-3 input-premium rounded-xl"><input id="sReg" placeholder="Registration Fee" value="0" class="p-3 input-premium rounded-xl"><input id="sAdm" placeholder="Admission Fee" value="0" class="p-3 input-premium rounded-xl col-span-2"></div>`;
+    window.openModal(form, async function() {
+        let students = await getCollection(COLLECTIONS.students);
+        let lastNum = students.map(s => parseInt(s.username?.replace('INNO',''))).filter(n=>!isNaN(n)).sort((a,b)=>b-a)[0] || 0;
+        let newNum = lastNum+1;
+        let username = 'INNO'+String(newNum).padStart(5,'0');
+        let password = Math.random().toString(36).slice(-8) + Math.floor(Math.random()*100);
+        let newStudent = {
+            id: await getNextId(COLLECTIONS.students),
+            srNo: students.length+1,
+            studentName: document.getElementById('sName').value,
+            fatherName: document.getElementById('sFather').value,
+            contacts: document.getElementById('sContacts').value,
+            class: document.getElementById('sClass').value,
+            monthlyFee: parseInt(document.getElementById('sFee').value)||0,
+            pendingBal: parseInt(document.getElementById('sPending').value)||0,
+            annualSub: parseInt(document.getElementById('sAnnual').value)||0,
+            registrationFee: parseInt(document.getElementById('sReg').value)||0,
+            admissionFee: parseInt(document.getElementById('sAdm').value)||0,
+            username, password,
+            date: new Date().toISOString().split('T')[0], total:0, jun:0, arrears: parseInt(document.getElementById('sPending').value)||0, remarks:''
+        };
+        await addDocument(COLLECTIONS.students, newStudent);
+        let users = await getCollection(COLLECTIONS.users);
+        let newUser = { id: await getNextId(COLLECTIONS.users), username, password, role:'student', refId: newStudent.id };
+        await addDocument(COLLECTIONS.users, newUser);
+        let parents = await getCollection(COLLECTIONS.parents);
+        let parentUsername = 'PAR'+String(newNum).padStart(5,'0');
+        let parent = { id: await getNextId(COLLECTIONS.parents), name: newStudent.fatherName, phone: newStudent.contacts, childId: newStudent.id, username: parentUsername };
+        await addDocument(COLLECTIONS.parents, parent);
+        let parentUser = { id: await getNextId(COLLECTIONS.users), username: parentUsername, password:'pass'+newStudent.id, role:'parent', refId: parent.id };
+        await addDocument(COLLECTIONS.users, parentUser);
+        let fees = await getCollection(COLLECTIONS.fees);
+        let now = new Date(); let month = now.toLocaleString('default', { month:'long' }); let year = now.getFullYear();
+        let dueDate = `${year}-${String(now.getMonth()+1).padStart(2,'0')}-10`;
+        let newFee = { id: await getNextId(COLLECTIONS.fees), studentId: newStudent.id, amount: newStudent.monthlyFee, dueDate, month, status:'unpaid', fine:0 };
+        await addDocument(COLLECTIONS.fees, newFee);
+        renderStudentsList();
+    });
+};
+window.editStudent = async function(id) {
+    let s = (await getCollection(COLLECTIONS.students)).find(x=>x.id===id); if(!s) return;
+    let form = `<h3 class="text-2xl font-bold mb-6 heading-font">✏️ Edit student</h3><div class="grid grid-cols-2 gap-4"><input id="eName" value="${s.studentName}" class="p-3 input-premium rounded-xl"><input id="eFather" value="${s.fatherName}" class="p-3 input-premium rounded-xl"><input id="eContacts" value="${s.contacts}" class="p-3 input-premium rounded-xl"><input id="eClass" value="${s.class}" class="p-3 input-premium rounded-xl"><input id="eFee" type="number" value="${s.monthlyFee}" class="p-3 input-premium rounded-xl"><input id="ePending" value="${s.pendingBal}" class="p-3 input-premium rounded-xl"><input id="eAnnual" value="${s.annualSub||0}" class="p-3 input-premium rounded-xl"><input id="eReg" value="${s.registrationFee||0}" class="p-3 input-premium rounded-xl"><input id="eAdm" value="${s.admissionFee||0}" class="p-3 input-premium rounded-xl"><input id="ePass" placeholder="New password (optional)" type="text" class="p-3 input-premium rounded-xl col-span-2"></div>`;
+    window.openModal(form, async function() {
+        let oldFather = s.fatherName;
+        s.studentName = document.getElementById('eName').value; s.fatherName = document.getElementById('eFather').value; s.contacts = document.getElementById('eContacts').value; s.class = document.getElementById('eClass').value;
+        s.monthlyFee = parseInt(document.getElementById('eFee').value)||0; s.pendingBal = parseInt(document.getElementById('ePending').value)||0; s.annualSub = parseInt(document.getElementById('eAnnual').value)||0; s.registrationFee = parseInt(document.getElementById('eReg').value)||0; s.admissionFee = parseInt(document.getElementById('eAdm').value)||0; s.arrears = s.pendingBal;
+        let newPass = document.getElementById('ePass').value; if(newPass) s.password = newPass;
+        await updateDocument(COLLECTIONS.students, s.id, s);
+        if (oldFather !== s.fatherName) {
+            let parents = await getCollection(COLLECTIONS.parents); let parent = parents.find(p => p.childId === s.id);
+            if (parent) { parent.name = s.fatherName; await updateDocument(COLLECTIONS.parents, parent.id, parent); }
+        }
+        if (newPass) {
+            let users = await getCollection(COLLECTIONS.users); let user = users.find(u => u.role==='student' && u.refId === s.id);
+            if (user) { user.password = newPass; await updateDocument(COLLECTIONS.users, user.id, user); }
+        }
+        renderStudentsList();
+    });
+};
+window.deleteStudent = async function(id) {
+    if(!confirm('Delete student?')) return;
+    await deleteDocument(COLLECTIONS.students, id);
+    let parents = await getCollection(COLLECTIONS.parents); let parent = parents.find(p => p.childId === id);
+    if (parent) await deleteDocument(COLLECTIONS.parents, parent.id);
+    let users = await getCollection(COLLECTIONS.users); let userToDelete = users.find(u => u.role==='student' && u.refId===id);
+    if (userToDelete) await deleteDocument(COLLECTIONS.users, userToDelete.id);
+    if (parent) { let parentUser = users.find(u => u.role==='parent' && u.refId===parent.id); if(parentUser) await deleteDocument(COLLECTIONS.users, parentUser.id); }
+    renderStudentsList();
+};
+
+// ==================== TEACHERS ====================
+window.showTeachers = async function() { renderTeachersList(); };
+async function renderTeachersList() {
+    let teachers = await getCollection(COLLECTIONS.teachers);
+    let html = `<h2 class="text-3xl font-extrabold mb-6 heading-font">👩‍🏫 Teachers</h2><div class="flex flex-wrap gap-3 mb-6"><button onclick="window.openAddTeacherModal()" class="px-6 py-3 premium-gradient rounded-xl">+ Add teacher</button><button onclick="window.printAllTeacherCredentials()" class="px-6 py-3 bg-cyan-600 rounded-xl">🖨️ Print All</button></div><div class="overflow-x-auto glass-card rounded-2xl p-4"><table class="w-full table-premium"><thead><tr><th>Name</th><th>Emp ID</th><th>Designation</th><th>Classes</th><th>Subject</th><th>Salary</th><th>Actions</th></tr></thead><tbody>`;
+    if (teachers.length===0) html += `<tr><td colspan="7" class="text-center py-8">No teachers</td></tr>`;
+    else {
+        teachers.forEach(t => { html += `<tr><td>${t.name}</td><td>${t.empId}</td><td>${t.designation||'Regular Teacher'}</td><td>${(t.assignedClasses||[]).join(', ')}</td><td>${t.subject}</td><td>${t.salary}</td><td><i class="fas fa-print text-green-400 cursor-pointer mr-2" onclick="window.printSingleTeacherCredential(${t.id})"></i><i class="fas fa-edit text-cyan-400 cursor-pointer mr-2" onclick="window.openEditTeacherModal(${t.id})"></i><i class="fas fa-trash text-rose-400 cursor-pointer" onclick="window.deleteTeacher(${t.id})"></i></td></tr>`; });
+    }
+    html += '</tbody></table></div>';
+    document.getElementById('mainContent').innerHTML = html;
+}
+window.openAddTeacherModal = function() {
+    let form = `<h3 class="text-2xl font-bold mb-6">➕ New teacher</h3><div class="grid grid-cols-2 gap-4"><input id="tName" placeholder="Full name" class="p-3 input-premium rounded-xl"><input id="tEmail" placeholder="Email" class="p-3 input-premium rounded-xl"><input id="tPhone" placeholder="Phone" class="p-3 input-premium rounded-xl"><input id="tClasses" placeholder="Assigned Classes (comma)" class="p-3 input-premium rounded-xl col-span-2"><select id="tDesignation" class="p-3 input-premium rounded-xl"><option>Regular Teacher</option><option>Incharge</option></select><input id="tSubject" placeholder="Subject" class="p-3 input-premium rounded-xl"><input id="tSalary" placeholder="Salary" type="number" class="p-3 input-premium rounded-xl"></div>`;
+    window.openModal(form, async function() {
+        let teachers = await getCollection(COLLECTIONS.teachers);
+        let lastNum = teachers.map(t => parseInt(t.empId?.replace('TEA',''))).filter(n=>!isNaN(n)).sort((a,b)=>b-a)[0] || 0;
+        let newNum = lastNum+1; let empId = 'TEA'+String(newNum).padStart(3,'0'); let username = empId;
+        let assignedClasses = document.getElementById('tClasses').value.split(',').map(c=>c.trim()).filter(c=>c);
+        let newTeacher = { id: await getNextId(COLLECTIONS.teachers), name: document.getElementById('tName').value, empId, email: document.getElementById('tEmail').value, phone: document.getElementById('tPhone').value, assignedClasses, subject: document.getElementById('tSubject').value, salary: parseInt(document.getElementById('tSalary').value)||0, designation: document.getElementById('tDesignation').value, username, password: 'pass'+newNum };
+        await addDocument(COLLECTIONS.teachers, newTeacher);
+        let newUser = { id: await getNextId(COLLECTIONS.users), username, password: newTeacher.password, role:'teacher', refId: newTeacher.id };
+        await addDocument(COLLECTIONS.users, newUser);
+        renderTeachersList();
+    });
+};
+window.openEditTeacherModal = async function(id) {
+    let t = (await getCollection(COLLECTIONS.teachers)).find(x=>x.id===id); if(!t) return;
+    let form = `<h3>✏️ Edit teacher</h3><div class="grid grid-cols-2 gap-4"><input id="tName" value="${t.name}" class="p-3 input-premium rounded-xl"><input id="tEmail" value="${t.email}" class="p-3 input-premium rounded-xl"><input id="tPhone" value="${t.phone}" class="p-3 input-premium rounded-xl"><input id="tClasses" value="${(t.assignedClasses||[]).join(', ')}" class="p-3 input-premium rounded-xl col-span-2"><select id="tDesignation" class="p-3 input-premium rounded-xl"><option ${t.designation==='Regular Teacher'?'selected':''}>Regular Teacher</option><option ${t.designation==='Incharge'?'selected':''}>Incharge</option></select><input id="tSubject" value="${t.subject}" class="p-3 input-premium rounded-xl"><input id="tSalary" value="${t.salary}" type="number" class="p-3 input-premium rounded-xl"><input id="tPassword" placeholder="New password (leave blank)" class="p-3 input-premium rounded-xl col-span-2"></div>`;
+    window.openModal(form, async function() {
+        t.name = document.getElementById('tName').value; t.email = document.getElementById('tEmail').value; t.phone = document.getElementById('tPhone').value;
+        t.assignedClasses = document.getElementById('tClasses').value.split(',').map(c=>c.trim()).filter(c=>c); t.designation = document.getElementById('tDesignation').value;
+        t.subject = document.getElementById('tSubject').value; t.salary = parseInt(document.getElementById('tSalary').value)||0;
+        let newPass = document.getElementById('tPassword').value; if(newPass) t.password = newPass;
+        await updateDocument(COLLECTIONS.teachers, t.id, t);
+        if(newPass){ let users = await getCollection(COLLECTIONS.users); let user = users.find(u=>u.role==='teacher' && u.refId===t.id); if(user){ user.password = newPass; await updateDocument(COLLECTIONS.users, user.id, user); } }
+        renderTeachersList();
+    });
+};
+window.deleteTeacher = async function(id) { if(confirm('Delete?')){ await deleteDocument(COLLECTIONS.teachers,id); let users = await getCollection(COLLECTIONS.users); let user = users.find(u=>u.role==='teacher'&&u.refId===id); if(user) await deleteDocument(COLLECTIONS.users, user.id); renderTeachersList(); } };
+
+// ==================== PARENTS ====================
+window.showParents = async function() {
+    let parents = await getCollection(COLLECTIONS.parents);
+    let students = await getCollection(COLLECTIONS.students);
+    let html = '<h2 class="text-3xl font-extrabold mb-6 heading-font">👪 Parents</h2><button onclick="window.printAllParentCredentials()" class="mb-6 px-6 py-3 bg-cyan-600 rounded-xl">🖨️ Print All</button><div class="overflow-x-auto glass-card rounded-2xl p-4"><table class="w-full table-premium"><thead><tr><th>Name</th><th>Phone</th><th>Child</th><th>Username</th><th>Actions</th></tr></thead><tbody>';
+    if (parents.length===0) html += `<tr><td colspan="5" class="text-center py-8">No parents</td></tr>`;
+    else { parents.forEach(p => { let s = students.find(st=>st.id===p.childId); html += `<tr><td>${p.name}</td><td>${p.phone}</td><td>${s?.studentName||''} (${s?.class||''})</td><td>${p.username}</td><td><i class="fas fa-print text-green-400 cursor-pointer" onclick="window.printSingleParentCredential(${p.id})"></i></td></tr>`; }); }
+    html += '</tbody></table></div>';
+    document.getElementById('mainContent').innerHTML = html;
+};
+
+// ==================== FEE LEDGER with arrears update ====================
+window.showFeeLedger = async function() { renderFeeLedger(); };
+async function renderFeeLedger() {
+    let fees = await getCollection(COLLECTIONS.fees); let students = await getCollection(COLLECTIONS.students); let studentMap = {}; students.forEach(s => studentMap[s.id] = s);
+    let html = `<h2 class="text-3xl font-extrabold mb-6 heading-font">💰 Fee ledger</h2><div class="flex gap-3 mb-6"><input id="feeSearch" placeholder="Search student name" class="p-3 input-premium rounded-xl flex-1"><button onclick="window.filterFeeLedger()" class="px-6 py-3 premium-gradient rounded-xl">🔍</button><button onclick="window.generateMonthlyFees()" class="px-6 py-3 premium-gradient rounded-xl">Generate monthly fees</button><button onclick="window.generateFeeReminders()" class="px-6 py-3 bg-amber-600 hover:bg-amber-500 rounded-xl">Generate reminders</button></div><div class="overflow-x-auto glass-card rounded-2xl p-4"><table class="w-full table-premium"><thead><tr><th>Student</th><th>Month</th><th>Amount</th><th>Fine</th><th>Status</th><th>Actions</th></tr></thead><tbody id="feeTableBody">`;
+    if (fees.length===0) html += `<tr><td colspan="6" class="text-center py-8">No fee records.</td></tr>`;
+    else {
+        fees.forEach(f => { let s = studentMap[f.studentId]; if(s) html += `<tr data-student-id="${s.id}" data-fee-id="${f.id}"><td>${s.studentName}</td><td>${f.month}</td><td>${f.amount}</td><td>${f.fine}</td><td><span class="px-2 py-1 rounded-full text-xs ${f.status==='paid'?'bg-emerald-500/20 text-emerald-300':'bg-rose-500/20 text-rose-300'}">${f.status}</span></td><td><button onclick="window.toggleFeeStatus(${f.id})" class="px-3 py-1 bg-cyan-600/50 rounded-lg mr-2">toggle</button><button onclick="window.editFeeDetails(${f.studentId}, ${f.id})" class="px-3 py-1 bg-emerald-600/50 rounded-lg mr-2">edit</button><button onclick="window.printChallan(${f.id})" class="px-3 py-1 bg-slate-600/50 rounded-lg">print</button></td></tr>`; });
+    }
+    html += '</tbody></table></div>';
+    document.getElementById('mainContent').innerHTML = html;
+}
+window.filterFeeLedger = async function() {
+    let search = document.getElementById('feeSearch')?.value.toLowerCase().replace(/\s+/g,'')||'';
+    let fees = await getCollection(COLLECTIONS.fees); let students = await getCollection(COLLECTIONS.students); let studentMap = {}; students.forEach(s=>studentMap[s.id]=s);
+    let filtered = fees.filter(f=>{ let s=studentMap[f.studentId]; return s && s.studentName.toLowerCase().replace(/\s+/g,'').includes(search); });
+    let tbody = document.getElementById('feeTableBody');
+    if(tbody){
+        tbody.innerHTML = '';
+        if(filtered.length===0) tbody.innerHTML = `<tr><td colspan="6" class="text-center py-8">No matching records.</td></tr>`;
+        else filtered.forEach(f=>{ let s=studentMap[f.studentId]; tbody.innerHTML += `<tr><td>${s.studentName}</td><td>${f.month}</td><td>${f.amount}</td><td>${f.fine}</td><td><span class="px-2 py-1 rounded-full ${f.status==='paid'?'bg-emerald-500/20 text-emerald-300':'bg-rose-500/20 text-rose-300'}">${f.status}</span></td><td><button onclick="window.toggleFeeStatus(${f.id})" class="px-3 py-1 bg-cyan-600/50 rounded-lg mr-2">toggle</button><button onclick="window.editFeeDetails(${f.studentId}, ${f.id})" class="px-3 py-1 bg-emerald-600/50 rounded-lg mr-2">edit</button><button onclick="window.printChallan(${f.id})" class="px-3 py-1 bg-slate-600/50 rounded-lg">print</button></td></tr>`; });
+    }
+};
+window.editFeeDetails = async function(studentId, feeId) {
+    let student = (await getCollection(COLLECTIONS.students)).find(s=>s.id===studentId); if(!student) return;
+    let fee = (await getCollection(COLLECTIONS.fees)).find(f=>f.id===feeId); if(!fee) return;
+    let form = `<h3>✏️ Edit Fee Details for ${student.studentName}</h3><div class="grid grid-cols-2 gap-4"><label>Annual Sub:</label><input id="editAnnualSub" type="number" value="${student.annualSub||0}" class="p-3 input-premium rounded-xl"><label>Admission Fee:</label><input id="editAdmissionFee" type="number" value="${student.admissionFee||0}" class="p-3 input-premium rounded-xl"><label>Registration Fee:</label><input id="editRegistrationFee" type="number" value="${student.registrationFee||0}" class="p-3 input-premium rounded-xl"><label>Arrears:</label><input id="editArrears" type="number" value="${student.pendingBal||0}" class="p-3 input-premium rounded-xl"><label>Fine:</label><input id="editFine" type="number" value="${fee.fine||0}" class="p-3 input-premium rounded-xl"><label>Monthly Fee:</label><input id="editMonthlyFee" type="number" value="${student.monthlyFee||0}" class="p-3 input-premium rounded-xl"></div>`;
+    window.openModal(form, async function() {
+        student.annualSub = parseInt(document.getElementById('editAnnualSub').value)||0; student.admissionFee = parseInt(document.getElementById('editAdmissionFee').value)||0; student.registrationFee = parseInt(document.getElementById('editRegistrationFee').value)||0;
+        student.pendingBal = parseInt(document.getElementById('editArrears').value)||0; fee.fine = parseInt(document.getElementById('editFine').value)||0; student.monthlyFee = parseInt(document.getElementById('editMonthlyFee').value)||0; fee.amount = student.monthlyFee;
+        await updateDocument(COLLECTIONS.students, student.id, student); await updateDocument(COLLECTIONS.fees, fee.id, fee); renderFeeLedger();
+    });
+};
+window.toggleFeeStatus = async function(id) {
+    let f = (await getCollection(COLLECTIONS.fees)).find(x=>x.id===id); if(f) { f.status = f.status==='paid'?'unpaid':'paid'; await updateDocument(COLLECTIONS.fees, f.id, f); renderFeeLedger(); }
+};
+window.generateMonthlyFees = async function() {
+    let students = await getCollection(COLLECTIONS.students); let fees = await getCollection(COLLECTIONS.fees);
+    let now = new Date(); let month = now.toLocaleString('default', { month:'long' }); let year = now.getFullYear(); let dueDate = `${year}-${String(now.getMonth()+1).padStart(2,'0')}-10`;
+    for (let s of students) {
+        let prevMonthDate = new Date(now); prevMonthDate.setMonth(prevMonthDate.getMonth()-1); let prevMonth = prevMonthDate.toLocaleString('default', { month:'long' });
+        let prevFee = fees.find(f => f.studentId === s.id && f.month === prevMonth && f.status === 'unpaid');
+        if (prevFee) { s.pendingBal = (s.pendingBal || 0) + prevFee.amount; await updateDocument(COLLECTIONS.students, s.id, s); }
+        let exists = fees.some(f => f.studentId === s.id && f.month === month && f.dueDate.startsWith(year+'-'));
+        if (!exists) { let newFee = { id: await getNextId(COLLECTIONS.fees), studentId: s.id, amount: s.monthlyFee, dueDate, month, status:'unpaid', fine:0 }; await addDocument(COLLECTIONS.fees, newFee); }
+    }
+    renderFeeLedger();
+};
+window.generateFeeReminders = async function() {
+    let fees = await getCollection(COLLECTIONS.fees); let students = await getCollection(COLLECTIONS.students); let parents = await getCollection(COLLECTIONS.parents);
+    let today = new Date(); let count = 0;
+    for (let f of fees) {
+        if (f.status === 'unpaid') {
+            let due = new Date(f.dueDate + 'T00:00:00'); let diffDays = (today - due) / (1000*3600*24);
+            if (diffDays > 15) {
+                let student = students.find(s=>s.id===f.studentId); let parent = parents.find(p=>p.childId===f.studentId);
+                if (parent) {
+                    let notif = { id: await getNextId(COLLECTIONS.notifications), title: 'Fee Reminder', message: `Fee overdue for ${student?.studentName} (${f.month})`, targetType: 'parent', targetId: parent.id, date: new Date().toISOString().split('T')[0], read: false };
+                    await addDocument(COLLECTIONS.notifications, notif); count++;
+                }
+            }
+        }
+    }
+    alert(`${count} reminders generated.`);
+    checkForNewNotifications();
+};
+window.printChallan = async function(feeId) {
+    let fees = await getCollection(COLLECTIONS.fees); let students = await getCollection(COLLECTIONS.students);
+    let fee = fees.find(f => f.id === feeId); if(!fee) return; let student = students.find(s => s.id === fee.studentId); if(!student) return;
+    let watermarkSvg = `<svg width="200" height="80"><text x="10" y="30" font-family="Arial" font-weight="bold" fill="rgba(0,0,0,0.1)" font-size="24">THE</text><text x="10" y="55" font-family="Arial" font-weight="bold" fill="rgba(0,0,0,0.1)" font-size="28">BUILDING</text><text x="10" y="75" font-family="Arial" font-weight="bold" fill="rgba(0,0,0,0.1)" font-size="24">NATION</text></svg>`;
+    let watermarkData = "data:image/svg+xml," + encodeURIComponent(watermarkSvg);
+    function challanHTML(copyType) {
+        let feeRows = ''; feeRows += `<tr><td style="border:1px solid #000;padding:4px;">Monthly Fee:</td><td style="border:1px solid #000;padding:4px;">${fee.amount || student.monthlyFee || 0}</td></tr>`;
+        if(student.annualSub) feeRows += `<tr><td style="border:1px solid #000;padding:4px;">Annual Sub:</td><td style="border:1px solid #000;padding:4px;">${student.annualSub}</td></tr>`;
+        if(student.admissionFee) feeRows += `<tr><td style="border:1px solid #000;padding:4px;">Admission fee:</td><td style="border:1px solid #000;padding:4px;">${student.admissionFee}</td></tr>`;
+        if(student.registrationFee) feeRows += `<tr><td style="border:1px solid #000;padding:4px;">Registration:</td><td style="border:1px solid #000;padding:4px;">${student.registrationFee}</td></tr>`;
+        if(student.pendingBal) feeRows += `<tr><td style="border:1px solid #000;padding:4px;">Arrears:</td><td style="border:1px solid #000;padding:4px;">${student.pendingBal}</td></tr>`;
+        if(fee.fine) feeRows += `<tr><td style="border:1px solid #000;padding:4px;">Fine:</td><td style="border:1px solid #000;padding:4px;">${fee.fine}</td></tr>`;
+        let total = (fee.amount||0)+(student.annualSub||0)+(student.admissionFee||0)+(student.registrationFee||0)+(student.pendingBal||0)+(fee.fine||0);
+        return `<div style="border:1px solid #000;padding:8px;margin:3px;background:white;position:relative;overflow:hidden;font-size:11px;"><div style="position:absolute;top:0;left:0;width:100%;height:100%;background-image:url('${watermarkData}');background-repeat:no-repeat;background-position:center;background-size:40% auto;opacity:0.2;pointer-events:none;"></div><div style="position:relative;z-index:1;"><div style="text-align:center;font-weight:800;font-size:18px;">THE INNOVATORS GRAMMAR SCHOOL</div><div style="text-align:center;font-size:11px;">city campus sheikhupura</div><div style="display:flex;justify-content:space-between;border-top:1px solid #000;border-bottom:1px solid #000;padding:4px 0;font-size:9px;"><div>Bank Alfalah Lahore-Sargodha Road Branch</div><div>Faisal Bank Limited IBB Sheikhupura</div></div><div style="display:grid;grid-template-columns:1fr 1fr;border:1px solid #000;padding:5px;margin:5px 0;"><div>ID: ${student.id}</div><div>Name: ${student.studentName}</div><div>Father: ${student.fatherName}</div><div>Class: ${student.class}</div><div>Fee Period: ${fee.month}</div><div>Due Date: ${fee.dueDate}</div></div><table style="width:100%;border-collapse:collapse;">${feeRows}<tr><td style="border:1px solid #000;padding:4px;">TOTAL:</td><td style="border:1px solid #000;padding:4px;">${total}.00</td></tr></table><div style="text-align:right;font-weight:bold;">Approved</div><div style="border:1px solid #000;padding:5px;font-size:9px;"><strong>Note:</strong> Fee only deposited in designated BANK.</div><div style="border:1px solid #000;padding:5px;margin-top:8px;text-align:center;">For BANK Use Only</div><div style="display:flex;justify-content:space-between;margin-top:8px;"><div>_________________<br>Bank Officer</div><div>_________________<br>Student/Parent</div></div><div style="text-align:center;margin-top:8px;border-top:1px dashed #333;padding-top:4px;">${copyType}</div></div></div>`;
+    }
+    let fullHTML = `<!DOCTYPE html><html><head><title>Fee Challan - ${student.studentName}</title><style>body{font-family:Arial;background:#fff;color:#000;margin:0;padding:5px;}.three-copies{display:flex;flex-wrap:nowrap;}.copy{flex:1;margin:0 3px;}@media print{body{padding:0;}}</style></head><body><div class="three-copies"><div class="copy">${challanHTML('CUSTOMER COPY')}</div><div class="copy">${challanHTML('BANK COPY')}</div><div class="copy">${challanHTML('INSTITUTE COPY')}</div></div><script>window.onload=function(){window.print();}<\/script></body></html>`;
+    let printWindow = window.open('', '_blank'); printWindow.document.write(fullHTML); printWindow.document.close();
+};
+
+// ==================== SALARIES with deduction reason ====================
+window.showSalaries = async function() { renderSalaries(); };
+async function renderSalaries() {
+    let salaries = await getCollection(COLLECTIONS.salaries); let teachers = await getCollection(COLLECTIONS.teachers);
+    let html = '<h2 class="text-3xl font-extrabold mb-6">💰 Salaries</h2><button onclick="window.openAddSalaryModal()" class="mb-6 px-6 py-3 premium-gradient rounded-xl">+ Add Salary</button><div class="overflow-x-auto glass-card p-4"><table class="w-full table-premium"><thead><tr><th>Teacher</th><th>Month</th><th>Amount</th><th>Deduction Reason</th><th>Status</th><th>Action</th></tr></thead><tbody>';
+    if (salaries.length===0) html += `<tr><td colspan="6" class="text-center py-8">No records</td></tr>`;
+    else { salaries.forEach(s => { let t = teachers.find(te=>te.id===s.teacherId); html += `<tr><td>${t?.name||''}</td><td>${s.month}</td><td>${s.amount}</td><td>${s.deductionReason||''}</td><td><span class="px-2 py-1 rounded-full ${s.paid?'bg-emerald-500/20 text-emerald-300':'bg-rose-500/20 text-rose-300'}">${s.paid?'Paid':'Unpaid'}</span></td><td><button onclick="window.toggleSalary(${s.id})" class="px-3 py-1 bg-cyan-600/50 rounded-lg">toggle</button></td></tr>`; }); }
+    html += '</tbody></table></div>';
+    document.getElementById('mainContent').innerHTML = html;
+}
+window.openAddSalaryModal = async function() {
+    let teachers = await getCollection(COLLECTIONS.teachers); let options = teachers.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+    let form = `<h3>➕ Add Salary</h3><select id="salTeacher" class="w-full p-3 input-premium rounded-xl mb-3">${options}</select><input id="salMonth" placeholder="Month (e.g. March 2026)" class="w-full p-3 input-premium rounded-xl mb-3"><input id="salAmount" type="number" placeholder="Amount" class="w-full p-3 input-premium rounded-xl mb-3"><input id="salDeduction" placeholder="Deduction reason (optional)" class="w-full p-3 input-premium rounded-xl">`;
+    window.openModal(form, async function() {
+        let newSal = { id: await getNextId(COLLECTIONS.salaries), teacherId: parseInt(document.getElementById('salTeacher').value), month: document.getElementById('salMonth').value, amount: parseInt(document.getElementById('salAmount').value)||0, deductionReason: document.getElementById('salDeduction').value, paid: false };
+        await addDocument(COLLECTIONS.salaries, newSal); renderSalaries();
+    });
+};
+window.toggleSalary = async function(id) {
+    let s = (await getCollection(COLLECTIONS.salaries)).find(x=>x.id===id); if(s) { s.paid = !s.paid; await updateDocument(COLLECTIONS.salaries, s.id, s); renderSalaries(); }
+};
+
+// ==================== ATTENDANCE OVERVIEW ====================
+window.showAttendanceOverview = async function() {
+    let att = await getCollection(COLLECTIONS.attendance); let students = await getCollection(COLLECTIONS.students);
+    let html = '<h2 class="text-3xl font-extrabold mb-6">📆 Attendance overview</h2><div class="overflow-x-auto glass-card p-4"><table class="w-full table-premium"><thead><tr><th>Student</th><th>Date</th><th>Status</th></tr></thead><tbody>';
+    if (att.length===0) html += `<tr><td colspan="3" class="text-center py-8">No records</td></tr>`;
+    else { att.forEach(a => { let s = students.find(st=>st.id===a.studentId); html += `<tr><td>${s?.studentName||''}</td><td>${a.date}</td><td><span class="px-2 py-1 rounded-full ${a.status==='present'?'bg-emerald-500/20 text-emerald-300':'bg-amber-500/20 text-amber-300'}">${a.status}</span></td></tr>`; }); }
+    html += '</tbody></table></div>';
+    document.getElementById('mainContent').innerHTML = html;
+};
+
+// ==================== LEAVE REQUESTS (admin sees all) with notifications ====================
+window.showLeaveRequests = async function() {
+    let leaves = await getCollection(COLLECTIONS.leaves); let students = await getCollection(COLLECTIONS.students); let teachers = await getCollection(COLLECTIONS.teachers);
+    let html = '<h2 class="text-3xl font-extrabold mb-6">📝 Leave Requests</h2><div class="overflow-x-auto glass-card p-4"><table class="w-full table-premium"><thead><tr><th>Applicant</th><th>Type</th><th>Start</th><th>End</th><th>Reason</th><th>Status</th><th>Action</th></tr></thead><tbody>';
+    if (leaves.length===0) html += `<tr><td colspan="7" class="text-center py-8">No requests</td></tr>`;
+    else {
+        leaves.forEach(l => {
+            let name = ''; if(l.applicantType==='student'){ let s=students.find(st=>st.id===l.applicantId); name=s?.studentName||'Student'; } else if(l.applicantType==='teacher'){ let t=teachers.find(tc=>tc.id===l.applicantId); name=t?.name||'Teacher'; }
+            html += `<tr><td>${name} (${l.applicantType})</td><td>${l.type}</td><td>${l.start}</td><td>${l.end}</td><td>${l.reason}</td><td><span class="px-2 py-1 rounded-full ${l.status==='pending'?'bg-amber-500/20 text-amber-300':l.status==='approved'?'bg-emerald-500/20 text-emerald-300':'bg-rose-500/20 text-rose-300'}">${l.status}</span></td><td><button onclick="window.approveLeave(${l.id})" class="px-3 py-1 bg-emerald-600/50 rounded-lg mr-1">✓</button><button onclick="window.rejectLeave(${l.id})" class="px-3 py-1 bg-rose-600/50 rounded-lg">✗</button></td></tr>`;
+        });
+    }
+    html += '</tbody></table></div>';
+    document.getElementById('mainContent').innerHTML = html;
+};
+window.approveLeave = async function(id) { await updateLeaveStatus(id, 'approved'); };
+window.rejectLeave = async function(id) { await updateLeaveStatus(id, 'rejected'); };
+async function updateLeaveStatus(id, status) {
+    let leaves = await getCollection(COLLECTIONS.leaves); let l = leaves.find(x=>x.id===id);
+    if(l) {
+        l.status = status;
+        await updateDocument(COLLECTIONS.leaves, l.id, l);
+        let applicantName = '';
+        if (l.applicantType === 'student') { let s = await getDocument(COLLECTIONS.students, l.applicantId); applicantName = s?.studentName || 'Student'; }
+        else if (l.applicantType === 'teacher') { let t = await getDocument(COLLECTIONS.teachers, l.applicantId); applicantName = t?.name || 'Teacher'; }
+        let notif = { id: await getNextId(COLLECTIONS.notifications), title: `Leave ${status}`, message: `Your leave request from ${l.start} to ${l.end} was ${status}.`, targetType: l.applicantType, targetId: l.applicantId, date: new Date().toISOString().split('T')[0], read: false };
+        await addDocument(COLLECTIONS.notifications, notif);
+        showLeaveRequests();
+        checkForNewNotifications();
+    }
+}
+
+// ==================== TEACHER LEAVE APPLY ====================
+window.showTeacherApplyLeave = function() {
+    let form = `<h3 class="text-2xl font-bold mb-6">📝 Apply Leave (Teacher)</h3><select id="leaveType" class="w-full p-3 input-premium rounded-xl mb-3"><option value="sick">Sick</option><option value="emergency">Emergency</option><option value="casual">Casual</option></select><input id="leaveStart" type="date" class="w-full p-3 input-premium rounded-xl mb-3"><input id="leaveEnd" type="date" class="w-full p-3 input-premium rounded-xl mb-3"><textarea id="leaveReason" placeholder="Reason" class="w-full p-3 input-premium rounded-xl"></textarea>`;
+    window.openModal(form, async function() {
+        let newLeave = { id: await getNextId(COLLECTIONS.leaves), applicantType: 'teacher', applicantId: currentUser.refId, type: document.getElementById('leaveType').value, start: document.getElementById('leaveStart').value, end: document.getElementById('leaveEnd').value, reason: document.getElementById('leaveReason').value, status: 'pending', appliedOn: new Date().toISOString().split('T')[0] };
+        await addDocument(COLLECTIONS.leaves, newLeave); alert('Leave applied');
+    });
+};
+
+// ==================== TEACHER APPROVE STUDENT LEAVES ====================
+window.showApproveLeaves = async function() {
+    let teacher = await getDocument(COLLECTIONS.teachers, currentUser.refId); if(!teacher) return;
+    let assignedClasses = teacher.assignedClasses || []; let students = await getCollection(COLLECTIONS.students);
+    let studentIds = students.filter(s => assignedClasses.includes(s.class)).map(s => s.id);
+    let leaves = await getCollection(COLLECTIONS.leaves); leaves = leaves.filter(l => l.applicantType === 'student' && studentIds.includes(l.applicantId) && l.status === 'pending');
+    let html = '<h2 class="text-3xl font-extrabold mb-6">⏳ Approve Student Leaves</h2>';
+    if (leaves.length===0) html += '<div class="glass-card p-8 text-center">No pending leaves</div>';
+    else { leaves.forEach(l => { let s = students.find(st=>st.id===l.applicantId); html += `<div class="glass-card p-4 mb-3 flex justify-between"><span>${s?.studentName}: ${l.start} to ${l.end} (${l.reason})</span><span><button onclick="window.approveLeave(${l.id})" class="px-3 py-1 bg-emerald-600/50 mr-2">✓</button><button onclick="window.rejectLeave(${l.id})" class="px-3 py-1 bg-rose-600/50">✗</button></span></div>`; }); }
+    document.getElementById('mainContent').innerHTML = html;
+};
+
+// ==================== MATERIALS ====================
+window.showMaterials = async function() {
+    let mats = await getCollection(COLLECTIONS.materials);
+    let html = '<h2 class="text-3xl font-extrabold mb-6">📚 Materials</h2><div class="overflow-x-auto glass-card p-4"><table class="w-full table-premium"><thead><tr><th>Title</th><th>Class</th><th>Subject</th><th>Uploaded By</th><th>Date</th><th>Link/File</th></tr></thead><tbody>';
+    if (mats.length===0) html += `<tr><td colspan="6" class="text-center py-8">No materials</td></tr>`;
+    else { mats.forEach(m => { let display = m.fileData ? `<a href="${m.fileData}" target="_blank" class="text-cyan-400 underline">view PDF</a>` : (m.link ? `<a href="${m.link}" target="_blank" class="text-cyan-400 underline">${m.link}</a>` : 'No file'); html += `<tr><td>${m.title}</td><td>${m.class}</td><td>${m.subject}</td><td>${m.uploadedBy}</td><td>${m.date}</td><td>${display}</td></tr>`; }); }
+    html += '</tbody></table></div>';
+    document.getElementById('mainContent').innerHTML = html;
+};
+window.showUploadMaterial = async function() {
+    let teacher = await getDocument(COLLECTIONS.teachers, currentUser.refId); if(!teacher) return;
+    let classOptions = (teacher.assignedClasses||[]).map(c=>`<option value="${c}">${c}</option>`).join('');
+    let form = `<h3>📤 Upload material</h3><select id="matClass" class="w-full p-3 input-premium rounded-xl mb-3">${classOptions}</select><input id="matTitle" placeholder="Title" class="w-full p-3 input-premium rounded-xl mb-3"><input id="matSubject" placeholder="Subject" class="w-full p-3 input-premium rounded-xl mb-3"><textarea id="matDesc" placeholder="Description" class="w-full p-3 input-premium rounded-xl mb-3"></textarea><input id="matLink" placeholder="External link (optional)" class="w-full p-3 input-premium rounded-xl mb-3"><input type="file" id="matFileInput" accept=".pdf" class="w-full text-sm">`;
+    window.openModal(form, async function() {
+        let fileInput = document.getElementById('matFileInput'); let file = fileInput.files[0]; let link = document.getElementById('matLink').value.trim();
+        let saveMaterial = async (fileData, fileName) => {
+            let newMat = { id: await getNextId(COLLECTIONS.materials), title: document.getElementById('matTitle').value, description: document.getElementById('matDesc').value, class: document.getElementById('matClass').value, subject: document.getElementById('matSubject').value, fileData, fileName, link, uploadedBy: teacher.name, date: new Date().toISOString().split('T')[0] };
+            await addDocument(COLLECTIONS.materials, newMat);
+            let students = await getCollection(COLLECTIONS.students); let classStudents = students.filter(s => s.class === newMat.class);
+            for (let s of classStudents) { let notif = { id: await getNextId(COLLECTIONS.notifications), title: 'New Material', message: `${teacher.name} uploaded ${newMat.title} for ${newMat.class}`, targetType: 'student', targetId: s.id, date: new Date().toISOString().split('T')[0], read: false }; await addDocument(COLLECTIONS.notifications, notif); }
+            alert('Material uploaded'); checkForNewNotifications();
+        };
+        if (file) { let reader = new FileReader(); reader.onload = e => saveMaterial(e.target.result, file.name); reader.readAsDataURL(file); } else saveMaterial(null, null);
+    });
+};
+window.showStudentMaterials = async function() {
+    let student = await getDocument(COLLECTIONS.students, currentUser.refId); if(!student) return;
+    let mats = (await getCollection(COLLECTIONS.materials)).filter(m => m.class === student.class);
+    let html = '<h2 class="text-3xl font-extrabold mb-6">📚 Study materials</h2>';
+    if (mats.length===0) html += '<div class="glass-card p-8 text-center">No materials</div>';
+    else { mats.forEach(m => { let linkHtml = m.fileData ? `<a href="${m.fileData}" target="_blank" class="inline-block mt-2 px-4 py-2 bg-cyan-600/30 rounded-lg">📖 Open PDF</a>` : (m.link ? `<a href="${m.link}" target="_blank" class="inline-block mt-2 px-4 py-2 bg-cyan-600/30 rounded-lg">🔗 Open Link</a>` : ''); html += `<div class="glass-card p-4 mb-3"><b>${m.title}</b> (${m.subject})<br><span class="text-sm">${m.description}</span><br>${linkHtml}</div>`; }); }
+    document.getElementById('mainContent').innerHTML = html;
+};
+
+// ==================== RESULTS ====================
+window.showAllResults = async function() {
+    let results = await getCollection(COLLECTIONS.results); let students = await getCollection(COLLECTIONS.students);
+    let html = '<h2 class="text-3xl font-extrabold mb-6">📋 All Results</h2><div class="overflow-x-auto glass-card p-4"><table class="w-full table-premium"><thead><tr><th>Student</th><th>Title</th><th>Remarks</th><th>File/Link</th><th>Uploaded By</th><th>Date</th></tr></thead><tbody>';
+    if (results.length===0) html += '<tr><td colspan="6" class="text-center py-8">No results</td></tr>';
+    else { results.forEach(r => { let s = students.find(st=>st.id===r.studentId); let display = r.fileData ? `<a href="${r.fileData}" target="_blank" class="text-cyan-400 underline">view PDF</a>` : (r.link ? `<a href="${r.link}" target="_blank" class="text-cyan-400 underline">link</a>` : ''); html += `<tr><td>${s?.studentName||''}</td><td>${r.title}</td><td>${r.remarks||''}</td><td>${display}</td><td>${r.uploadedBy}</td><td>${r.date}</td></tr>`; }); }
+    html += '</tbody></table></div>';
+    document.getElementById('mainContent').innerHTML = html;
+};
+window.showUploadResults = async function() {
+    let teacher = await getDocument(COLLECTIONS.teachers, currentUser.refId); if(!teacher) return;
+    let students = await getCollection(COLLECTIONS.students); let classStudents = students.filter(s => (teacher.assignedClasses||[]).includes(s.class));
+    let options = '<option value="">Select student</option>'; classStudents.forEach(s => options += `<option value="${s.id}">${s.studentName} (${s.class})</option>`);
+    let form = `<h3>📤 Upload Result</h3><select id="resultStudentId" class="w-full p-3 input-premium rounded-xl mb-3" required>${options}</select><input id="resultTitle" placeholder="Title" class="w-full p-3 input-premium rounded-xl mb-3" required><textarea id="resultRemarks" placeholder="Remarks" class="w-full p-3 input-premium rounded-xl mb-3"></textarea><input id="resultLink" placeholder="External link" class="w-full p-3 input-premium rounded-xl mb-3"><input type="file" id="resultFileInput" accept=".pdf" class="w-full">`;
+    window.openModal(form, async function() {
+        let studentId = document.getElementById('resultStudentId').value; if(!studentId) { alert('Select student'); return; }
+        let file = document.getElementById('resultFileInput').files[0]; let link = document.getElementById('resultLink').value.trim();
+        let saveResult = async (fileData, fileName) => {
+            let newRes = { id: await getNextId(COLLECTIONS.results), studentId: parseInt(studentId), title: document.getElementById('resultTitle').value, remarks: document.getElementById('resultRemarks').value, fileData, fileName, link, uploadedBy: teacher.name, date: new Date().toISOString().split('T')[0] };
+            await addDocument(COLLECTIONS.results, newRes);
+            let notif = { id: await getNextId(COLLECTIONS.notifications), title: 'New Result', message: `Your result "${newRes.title}" is now available.`, targetType: 'student', targetId: studentId, date: new Date().toISOString().split('T')[0], read: false };
+            await addDocument(COLLECTIONS.notifications, notif);
+            let parent = (await getCollection(COLLECTIONS.parents)).find(p => p.childId === studentId);
+            if (parent) { let parentNotif = { ...notif, targetType: 'parent', targetId: parent.id, message: `New result for your child: ${newRes.title}` }; await addDocument(COLLECTIONS.notifications, parentNotif); }
+            alert('Result uploaded'); checkForNewNotifications();
+        };
+        if (file) { let reader = new FileReader(); reader.onload = e => saveResult(e.target.result, file.name); reader.readAsDataURL(file); } else saveResult(null, null);
+    });
+};
+window.showStudentResults = async function() {
+    let student = await getDocument(COLLECTIONS.students, currentUser.refId); if(!student) return;
+    let results = (await getCollection(COLLECTIONS.results)).filter(r => r.studentId === student.id);
+    let html = '<h2 class="text-3xl font-extrabold mb-6">📋 My Results</h2>';
+    if (results.length===0) html += '<div class="glass-card p-8 text-center">No results</div>';
+    else { results.forEach(r => { let display = r.fileData ? `<a href="${r.fileData}" target="_blank" class="text-cyan-400 underline">📄 View PDF</a>` : (r.link ? `<a href="${r.link}" target="_blank" class="text-cyan-400 underline">🔗 Link</a>` : ''); html += `<div class="glass-card p-5 mb-3"><b>${r.title}</b><br><span>${r.remarks}</span><br>${display}<br><span class="text-xs">Uploaded: ${r.date} by ${r.uploadedBy}</span></div>`; }); }
+    document.getElementById('mainContent').innerHTML = html;
+};
+window.showParentResults = async function() {
+    let parent = await getDocument(COLLECTIONS.parents, currentUser.refId); if(!parent) return;
+    let results = (await getCollection(COLLECTIONS.results)).filter(r => r.studentId === parent.childId);
+    let student = await getDocument(COLLECTIONS.students, parent.childId);
+    let html = `<h2 class="text-3xl font-extrabold mb-6">📋 Results for ${student?.studentName||''}</h2>`;
+    if (results.length===0) html += '<div class="glass-card p-8 text-center">No results</div>';
+    else { results.forEach(r => { let display = r.fileData ? `<a href="${r.fileData}" target="_blank" class="text-cyan-400 underline">📄 View PDF</a>` : (r.link ? `<a href="${r.link}" target="_blank" class="text-cyan-400 underline">🔗 Link</a>` : ''); html += `<div class="glass-card p-5 mb-3"><b>${r.title}</b><br><span>${r.remarks}</span><br>${display}<br><span class="text-xs">Uploaded: ${r.date} by ${r.uploadedBy}</span></div>`; }); }
+    document.getElementById('mainContent').innerHTML = html;
+};
+
+// ==================== NOTIFICATIONS ====================
+window.showNotifications = async function() {
+    let nots = await getCollection(COLLECTIONS.notifications); let relevant = filterNotificationsForUser(nots);
+    for (let n of relevant) { if (!n.read) { n.read = true; await updateDocument(COLLECTIONS.notifications, n.id, { read: true }); } }
+    updateNotificationBadge(0);
+    let html = '<h2 class="text-3xl font-extrabold mb-6">🔔 Notifications</h2>';
+    if (currentUser.role === 'admin' || currentUser.role === 'director') html += '<button onclick="window.openSendNotificationModal()" class="mb-6 px-6 py-3 premium-gradient rounded-xl">+ Send notification</button>';
+    html += '<div class="space-y-3">';
+    if (relevant.length===0) html += '<div class="glass-card p-5 text-center">No notifications</div>';
+    else { relevant.sort((a,b) => new Date(b.date) - new Date(a.date)); relevant.forEach(n => html += `<div class="glass-card p-5 flex items-start gap-3"><i class="fas fa-bell text-cyan-400 mt-1"></i><div><b>${n.title}</b><p>${n.message}</p><span class="text-xs text-cyan-300/70">${n.date}</span></div></div>`); }
+    html += '</div>';
+    document.getElementById('mainContent').innerHTML = html;
+};
+window.openSendNotificationModal = function() {
+    let form = `<h3>✉️ New notification</h3><input id="notifTitle" placeholder="Title" class="w-full p-3 input-premium rounded-xl mb-3"><textarea id="notifMsg" placeholder="Message" class="w-full p-3 input-premium rounded-xl mb-3"><select id="notifTarget" class="w-full p-3 input-premium rounded-xl mb-3"><option value="all">All</option><option value="teachers">Teachers</option><option value="students">Students</option><option value="parents">Parents</option><option value="class">Specific class</option><option value="student">Specific student</option></select><input id="notifTargetId" placeholder="Class name or student ID" class="w-full p-3 input-premium rounded-xl">`;
+    window.openModal(form, async function() {
+        let notif = { id: await getNextId(COLLECTIONS.notifications), title: document.getElementById('notifTitle').value, message: document.getElementById('notifMsg').value, targetType: document.getElementById('notifTarget').value, targetId: document.getElementById('notifTargetId').value||null, date: new Date().toISOString().split('T')[0], read: false };
+        await addDocument(COLLECTIONS.notifications, notif); showNotifications(); checkForNewNotifications();
+    });
+};
+
+// ==================== IMPORT/EXPORT (Director only) ====================
+window.exportStudentsJSON = async function() { let data = await getCollection(COLLECTIONS.students); let blob = new Blob([JSON.stringify(data,null,2)],{type:'application/json'}); let a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='students.json'; a.click(); };
+window.exportTeachersJSON = async function() { let data = await getCollection(COLLECTIONS.teachers); let blob = new Blob([JSON.stringify(data,null,2)],{type:'application/json'}); let a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='teachers.json'; a.click(); };
+window.importStudentsFromJSON = async function() {
+    let file = document.getElementById('importStudentFile').files[0]; if(!file) return;
+    let reader = new FileReader();
+    reader.onload = async function(e) {
+        try {
+            let imported = JSON.parse(e.target.result); if(!Array.isArray(imported)) { alert('Invalid JSON'); return; }
+            let existingStudents = await getCollection(COLLECTIONS.students); let existingUsers = await getCollection(COLLECTIONS.users); let existingParents = await getCollection(COLLECTIONS.parents);
+            let studentBySrNo = new Map(); existingStudents.forEach(s => studentBySrNo.set(s.srNo, s));
+            let maxStudentId = existingStudents.reduce((max,s)=>Math.max(max,Number(s.id)||0),0); let maxUserId = existingUsers.reduce((max,u)=>Math.max(max,Number(u.id)||0),0); let maxParentId = existingParents.reduce((max,p)=>Math.max(max,Number(p.id)||0),0);
+            let nextStudentId = maxStudentId+1; let nextUserId = maxUserId+1; let nextParentId = maxParentId+1;
+            let writes = []; let addedOrUpdated = [];
+            for (let item of imported) {
+                if(!item.studentName) continue; let srNo = item.srNo; if(srNo===undefined) continue;
+                let existing = studentBySrNo.get(srNo); let studentId;
+                if(existing) {
+                    studentId = existing.id; let updatedStudent = {...existing, ...item, id: existing.id, srNo}; if(!item.username) updatedStudent.username = existing.username; if(!item.password) updatedStudent.password = existing.password;
+                    writes.push({ ref: db.collection(COLLECTIONS.students).doc(String(studentId)), data: updatedStudent, type: 'set' }); addedOrUpdated.push(updatedStudent);
+                } else {
+                    studentId = nextStudentId++; let username = item.username;
+                    if(!username) { let base='INNO'; let counter=1; while(existingUsers.some(u=>u.username===base+String(counter).padStart(5,'0'))||existingStudents.some(s=>s.username===base+String(counter).padStart(5,'0'))) counter++; username = base+String(counter).padStart(5,'0'); }
+                    let password = item.password || (Math.random().toString(36).slice(-8)+Math.floor(Math.random()*100));
+                    let newStudent = { id: studentId, srNo, studentName: item.studentName, fatherName: item.fatherName||'', contacts: item.contacts||'', class: item.class||'', monthlyFee: parseFloat(item.monthlyFee)||0, pendingBal: parseFloat(item.pendingBal)||0, annualSub: parseFloat(item.annualSub)||0, registrationFee: parseFloat(item.registrationFee)||0, admissionFee: parseFloat(item.admissionFee)||0, date: item.date||new Date().toISOString().split('T')[0], total:0, jun:0, arrears: parseFloat(item.pendingBal)||0, remarks:'', username, password };
+                    writes.push({ ref: db.collection(COLLECTIONS.students).doc(String(studentId)), data: newStudent, type: 'set' }); addedOrUpdated.push(newStudent); studentBySrNo.set(srNo, newStudent);
+                    let newUser = { id: nextUserId++, username, password, role:'student', refId: studentId }; writes.push({ ref: db.collection(COLLECTIONS.users).doc(String(newUser.id)), data: newUser, type: 'set' }); existingUsers.push(newUser);
+                    if(!existingParents.some(p=>p.childId===studentId) && !writes.some(w=>w.data&&w.data.childId===studentId)) {
+                        let parentUsername = 'PAR'+username.replace('INNO',''); let finalParentUser = parentUsername; let counter=1;
+                        while(existingUsers.some(u=>u.username===finalParentUser)||writes.some(w=>w.data&&w.data.username===finalParentUser)) { finalParentUser = parentUsername + counter; counter++; }
+                        let newParent = { id: nextParentId++, name: newStudent.fatherName||'Parent', phone: newStudent.contacts||'', childId: studentId, username: finalParentUser }; writes.push({ ref: db.collection(COLLECTIONS.parents).doc(String(newParent.id)), data: newParent, type: 'set' });
+                        let parentUser = { id: nextUserId++, username: finalParentUser, password: 'pass'+studentId, role:'parent', refId: newParent.id }; writes.push({ ref: db.collection(COLLECTIONS.users).doc(String(parentUser.id)), data: parentUser, type: 'set' }); existingUsers.push(parentUser);
+                    }
+                }
+            }
+            if(writes.length===0) { alert('No new students'); return; }
+            await runBatchedWrites(writes); alert(`Imported/updated ${addedOrUpdated.length} students.`); showStudents();
+        } catch(err) { alert('Error: '+err.message); }
+    };
+    reader.readAsText(file);
+};
+window.importTeachersFromJSON = async function() {
+    let file = document.getElementById('importTeacherFile').files[0]; if(!file) return;
+    let reader = new FileReader();
+    reader.onload = async function(e) {
+        try {
+            let imported = JSON.parse(e.target.result); if(!Array.isArray(imported)) { alert('Invalid JSON'); return; }
+            let existingTeachers = await getCollection(COLLECTIONS.teachers); let existingUsers = await getCollection(COLLECTIONS.users);
+            let existingTeacherUsernames = new Set(existingTeachers.map(t=>t.username)); let existingUserUsernames = new Set(existingUsers.map(u=>u.username));
+            let maxTeacherId = existingTeachers.reduce((max,t)=>Math.max(max,Number(t.id)||0),0); let maxUserId = existingUsers.reduce((max,u)=>Math.max(max,Number(u.id)||0),0);
+            let nextTeacherId = maxTeacherId+1; let nextUserId = maxUserId+1;
+            let writes = []; let addedTeachers = [];
+            for (let t of imported) {
+                if(!t.name) continue; let username = t.username;
+                if(!username || existingTeacherUsernames.has(username) || existingUserUsernames.has(username)) { let base='TEA'; let counter=1; while(existingTeacherUsernames.has(base+String(counter).padStart(3,'0'))||existingUserUsernames.has(base+String(counter).padStart(3,'0'))) counter++; username = base+String(counter).padStart(3,'0'); }
+                let empId = t.empId || username; let password = t.password || 'pass'+(parseInt(empId.replace(/\D/g,''))||Math.floor(Math.random()*1000));
+                let newTeacher = { id: nextTeacherId++, name: t.name, empId, email: t.email||'', phone: t.phone||'', address: t.address||'', qualification: t.qualification||'', experience: t.experience||0, assignedClasses: t.assignedClasses||[], subject: t.subject||'', salary: parseFloat(t.salary)||0, designation: t.designation||'Regular Teacher', username, password };
+                addedTeachers.push(newTeacher); existingTeacherUsernames.add(username);
+                writes.push({ ref: db.collection(COLLECTIONS.teachers).doc(String(newTeacher.id)), data: newTeacher, type: 'set' });
+                let newUser = { id: nextUserId++, username, password, role:'teacher', refId: newTeacher.id }; writes.push({ ref: db.collection(COLLECTIONS.users).doc(String(newUser.id)), data: newUser, type: 'set' }); existingUserUsernames.add(username);
+            }
+            if(writes.length===0) { alert('No new teachers'); return; }
+            await runBatchedWrites(writes); alert(`Imported ${addedTeachers.length} teachers.`); showTeachers();
+        } catch(err) { alert('Error: '+err.message); }
+    };
+    reader.readAsText(file);
+};
+
+// ==================== PROFILE ====================
+window.showProfile = function() {
+    document.getElementById('mainContent').innerHTML = `<h2 class="text-3xl font-extrabold mb-6">👤 Profile</h2><div class="glass-card p-8 max-w-lg"><div class="flex items-center gap-4 mb-6"><div class="w-20 h-20 premium-gradient rounded-2xl flex items-center justify-center text-4xl font-bold">${currentUser.username.charAt(0).toUpperCase()}</div><div><p class="text-2xl font-bold">${currentUser.username}</p><p class="text-cyan-300">${currentUser.role}</p></div></div><button onclick="window.changePassword()" class="w-full py-3 bg-cyan-600/20 rounded-xl mb-3">Change password</button><button onclick="window.uploadProfilePic()" class="w-full py-3 bg-cyan-600/20 rounded-xl">Upload picture</button></div>`;
+};
+window.changePassword = async function() {
+    let newPass = prompt('Enter new password:'); if(newPass) { let users = await getCollection(COLLECTIONS.users); let u = users.find(x=>x.id===currentUser.id); if(u){ u.password = newPass; await updateDocument(COLLECTIONS.users, u.id, u); alert('Password updated'); } }
+};
+window.uploadProfilePic = function() { alert('Profile picture upload simulation'); };
+
+// ==================== TEACHER MODULE (limited student view) ====================
+window.showTeacherDashboard = async function() {
+    let teacher = await getDocument(COLLECTIONS.teachers, currentUser.refId);
+    document.getElementById('mainContent').innerHTML = `<h2 class="text-4xl font-extrabold mb-6">👩‍🏫 Teacher dashboard</h2><div class="glass-card p-8"><p class="text-xl">Welcome, ${teacher?.name}.</p><p class="text-cyan-300">Designation: ${teacher?.designation}</p><p class="text-cyan-300">Classes: ${(teacher?.assignedClasses||[]).join(', ')}</p></div>`;
+};
+window.showManageStudents = async function() {
+    let teacher = await getDocument(COLLECTIONS.teachers, currentUser.refId); if(!teacher) return;
+    let assignedClasses = teacher.assignedClasses || []; let students = await getCollection(COLLECTIONS.students); students = students.filter(s => assignedClasses.includes(s.class));
+    let attendance = await getCollection(COLLECTIONS.attendance);
+    let html = `<h2 class="text-3xl font-extrabold mb-6">👥 My Students</h2><div class="mb-6 flex gap-3"><input id="teacherSearchStudent" placeholder="Search" class="p-3 input-premium rounded-xl flex-1"><button onclick="window.filterTeacherStudents()" class="px-6 py-3 premium-gradient rounded-xl">🔍</button></div><div class="overflow-x-auto glass-card p-4"><table class="w-full table-premium"><thead><tr><th>Name</th><th>Father</th><th>Class</th><th>Monthly Attendance</th></tr></thead><tbody id="teacherStudentTableBody">`;
+    if (students.length===0) html += `<tr><td colspan="4" class="text-center py-8">No students</td></tr>`;
+    else { students.forEach(s => { let studentAtt = attendance.filter(a => a.studentId === s.id); let present = studentAtt.filter(a=>a.status==='present').length; let total = studentAtt.length; let percent = total ? ((present/total)*100).toFixed(0) : '0'; html += `<tr><td>${s.studentName}</td><td>${s.fatherName}</td><td>${s.class}</td><td>${present}/${total} (${percent}%)</td></tr>`; }); }
+    html += '</tbody></table></div>';
+    document.getElementById('mainContent').innerHTML = html;
+};
+window.filterTeacherStudents = async function() {
+    let teacher = await getDocument(COLLECTIONS.teachers, currentUser.refId); if(!teacher) return;
+    let search = document.getElementById('teacherSearchStudent').value.toLowerCase().replace(/\s+/g,'');
+    let assignedClasses = teacher.assignedClasses||[]; let students = await getCollection(COLLECTIONS.students); students = students.filter(s => assignedClasses.includes(s.class) && (s.studentName.toLowerCase().replace(/\s+/g,'').includes(search)||s.fatherName.toLowerCase().replace(/\s+/g,'').includes(search)));
+    let attendance = await getCollection(COLLECTIONS.attendance); let tbody = document.getElementById('teacherStudentTableBody');
+    if(tbody){ tbody.innerHTML = ''; if(students.length===0) tbody.innerHTML = `<tr><td colspan="4" class="text-center py-8">No matching</td></tr>`; else students.forEach(s=>{ let studentAtt = attendance.filter(a=>a.studentId===s.id); let present = studentAtt.filter(a=>a.status==='present').length; let total = studentAtt.length; let percent = total?((present/total)*100).toFixed(0):'0'; tbody.innerHTML += `<tr><td>${s.studentName}</td><td>${s.fatherName}</td><td>${s.class}</td><td>${present}/${total} (${percent}%)</td></tr>`; }); }
+};
+window.showMarkAttendance = async function() {
+    let teacher = await getDocument(COLLECTIONS.teachers, currentUser.refId); if(!teacher) return; if(teacher.designation !== 'Incharge') { alert('Only Incharge can mark attendance'); return; }
+    let assignedClasses = teacher.assignedClasses||[]; if(assignedClasses.length===0) { alert('No classes'); return; }
+    let classOptions = assignedClasses.map(c=>`<option value="${c}">${c}</option>`).join('');
+    let today = new Date().toISOString().split('T')[0];
+    let html = `<h2 class="text-3xl font-extrabold mb-6">📆 Mark attendance</h2><div class="glass-card p-8"><select id="attendanceClassSelect" class="w-full p-3 input-premium rounded-xl mb-4">${classOptions}</select><input id="attendanceSearch" placeholder="Search student" class="w-full p-3 input-premium rounded-xl mb-4"><div id="attendanceStudentList"></div><button onclick="window.loadStudentsForAttendance()" class="mt-4 px-6 py-3 bg-cyan-600/50 rounded-xl">Load Students</button></div>`;
+    document.getElementById('mainContent').innerHTML = html;
+};
+window.loadStudentsForAttendance = async function() {
+    let selectedClass = document.getElementById('attendanceClassSelect')?.value; if(!selectedClass) return;
+    let students = await getCollection(COLLECTIONS.students); students = students.filter(s => s.class === selectedClass);
+    let today = new Date().toISOString().split('T')[0];
+    let listHtml = `<form id="attForm"><h3 class="text-xl mb-3">Class: ${selectedClass}</h3><div id="attendanceCheckboxList">`;
+    if(students.length===0) listHtml += '<p>No students</p>';
+    else students.forEach(s => { listHtml += `<div class="flex items-center gap-3 mb-3 student-item" data-name="${s.studentName.toLowerCase().replace(/\s+/g,'')}"><input type="checkbox" id="att_${s.id}" value="${s.id}" class="w-5 h-5"><label>${s.studentName}</label></div>`; });
+    listHtml += `</div><button type="button" onclick="window.saveAttendance('${today}')" class="mt-4 px-6 py-3 premium-gradient rounded-xl">Save attendance</button></form>`;
+    document.getElementById('attendanceStudentList').innerHTML = listHtml;
+    document.getElementById('attendanceSearch').addEventListener('input', function(){ let s=this.value.toLowerCase().replace(/\s+/g,''); document.querySelectorAll('.student-item').forEach(item=>{ item.style.display = item.getAttribute('data-name').includes(s)?'flex':'none'; }); });
+};
+window.saveAttendance = async function(date) {
+    let teacher = await getDocument(COLLECTIONS.teachers, currentUser.refId); if(!teacher) return; let selectedClass = document.getElementById('attendanceClassSelect')?.value; if(!selectedClass) return;
+    let students = await getCollection(COLLECTIONS.students); students = students.filter(s=>s.class===selectedClass);
+    for(let s of students){ let checked = document.getElementById(`att_${s.id}`)?.checked; let newAtt = { id: await getNextId(COLLECTIONS.attendance), studentId: s.id, date, status: checked?'present':'absent', markedBy: currentUser.id }; await addDocument(COLLECTIONS.attendance, newAtt); }
+    alert('Attendance saved');
+};
+window.showMySalary = async function() {
+    let salaries = (await getCollection(COLLECTIONS.salaries)).filter(s => s.teacherId === currentUser.refId);
+    let html = '<h2 class="text-3xl font-extrabold mb-6">💰 My salary</h2><div class="glass-card p-6"><table class="w-full table-premium"><tr><th>Month</th><th>Amount</th><th>Deduction Reason</th><th>Status</th></tr>';
+    if(salaries.length===0) html += `<tr><td colspan="4" class="text-center py-4">No records</td></tr>`;
+    else salaries.forEach(s => html += `<tr><td>${s.month}</td><td>${s.amount}</td><td>${s.deductionReason||''}</td><td><span class="px-2 py-1 rounded-full ${s.paid?'bg-emerald-500/20 text-emerald-300':'bg-rose-500/20 text-rose-300'}">${s.paid?'Paid':'Unpaid'}</span></td></tr>`);
+    html += '</table></div>';
+    document.getElementById('mainContent').innerHTML = html;
+};
+
+// ==================== STUDENT MODULE ====================
+window.showStudentProfile = async function() {
+    let student = await getDocument(COLLECTIONS.students, currentUser.refId);
+    if(!student) { document.getElementById('mainContent').innerHTML = '<h2>No profile</h2>'; return; }
+    document.getElementById('mainContent').innerHTML = `<h2 class="text-3xl font-extrabold mb-6">👤 My profile</h2><div class="glass-card p-8 max-w-lg"><p><span class="text-cyan-300">Name:</span> ${student.studentName}</p><p><span class="text-cyan-300">Father:</span> ${student.fatherName}</p><p><span class="text-cyan-300">Class:</span> ${student.class}</p><p><span class="text-cyan-300">Contacts:</span> ${student.contacts}</p><p><span class="text-cyan-300">Username:</span> ${student.username}</p><p><span class="text-cyan-300">Password:</span> ${student.password}</p></div>`;
+};
+window.showMyAttendance = async function() {
+    let att = (await getCollection(COLLECTIONS.attendance)).filter(a => a.studentId === currentUser.refId);
+    let total = att.length; let present = att.filter(a=>a.status==='present').length; let percent = total ? ((present/total)*100).toFixed(1) : 0;
+    let html = `<h2 class="text-3xl font-extrabold mb-6">📆 My attendance (${percent}%)</h2><div class="glass-card p-6"><table class="w-full table-premium"><tr><th>Date</th><th>Status</th></tr>`;
+    if(att.length===0) html += `<tr><td colspan="2" class="text-center py-4">No records</td></tr>`;
+    else att.forEach(a => html += `<tr><td>${a.date}</td><td><span class="px-2 py-1 rounded-full ${a.status==='present'?'bg-emerald-500/20 text-emerald-300':'bg-amber-500/20 text-amber-300'}">${a.status}</span></td></tr>`);
+    html += '</table></div>';
+    document.getElementById('mainContent').innerHTML = html;
+};
+window.showApplyLeave = function() {
+    let form = `<h3>📝 Apply Leave</h3><select id="leaveType" class="w-full p-3 input-premium rounded-xl mb-3"><option value="sick">Sick</option><option value="emergency">Emergency</option></select><input id="leaveStart" type="date" class="w-full p-3 input-premium rounded-xl mb-3"><input id="leaveEnd" type="date" class="w-full p-3 input-premium rounded-xl mb-3"><textarea id="leaveReason" placeholder="Reason" class="w-full p-3 input-premium rounded-xl"></textarea>`;
+    window.openModal(form, async function() {
+        let newLeave = { id: await getNextId(COLLECTIONS.leaves), applicantType: 'student', applicantId: currentUser.refId, type: document.getElementById('leaveType').value, start: document.getElementById('leaveStart').value, end: document.getElementById('leaveEnd').value, reason: document.getElementById('leaveReason').value, status: 'pending', appliedOn: new Date().toISOString().split('T')[0] };
+        await addDocument(COLLECTIONS.leaves, newLeave); alert('Leave applied');
+    });
+};
+window.showStudentFees = async function() {
+    let fees = (await getCollection(COLLECTIONS.fees)).filter(f => f.studentId === currentUser.refId);
+    let html = '<h2 class="text-3xl font-extrabold mb-6">💰 Fee challan</h2><div class="glass-card p-6"><table class="w-full table-premium"><tr><th>Month</th><th>Amount</th><th>Fine</th><th>Status</th><th>Print</th></tr>';
+    if(fees.length===0) html += `<tr><td colspan="5" class="text-center py-4">No records</td></tr>`;
+    else fees.forEach(f => html += `<tr><td>${f.month}</td><td>${f.amount}</td><td>${f.fine}</td><td><span class="px-2 py-1 rounded-full ${f.status==='paid'?'bg-emerald-500/20 text-emerald-300':'bg-rose-500/20 text-rose-300'}">${f.status}</span></td><td><button onclick="window.printChallan(${f.id})" class="px-3 py-1 bg-cyan-600/50 rounded-lg">🖨️</button></td></tr>`);
+    html += '</table></div>';
+    document.getElementById('mainContent').innerHTML = html;
+};
+window.showMyTeachers = async function() {
+    let student = await getDocument(COLLECTIONS.students, currentUser.refId); if(!student) return;
+    let teachers = (await getCollection(COLLECTIONS.teachers)).filter(t => (t.assignedClasses||[]).includes(student.class));
+    let html = '<h2 class="text-3xl font-extrabold mb-6">👩‍🏫 My teachers</h2>';
+    if(teachers.length===0) html += '<div class="glass-card p-8 text-center">No teachers</div>';
+    else teachers.forEach(t => html += `<div class="glass-card p-4 mb-3"><b>${t.name}</b> (${t.subject})<br><span>Designation: ${t.designation}</span><br><span>Contact: ${t.phone}</span></div>`);
+    document.getElementById('mainContent').innerHTML = html;
+};
+
+// ==================== PARENT MODULE (with print ledger) ====================
+window.showParentDashboard = async function() {
+    let parent = await getDocument(COLLECTIONS.parents, currentUser.refId); if(!parent) { document.getElementById('mainContent').innerHTML='<h2>No parent record</h2>'; return; }
+    let children = (await getCollection(COLLECTIONS.students)).filter(s => s.id === parent.childId);
+    let html = '<h2 class="text-3xl font-extrabold mb-6">👪 My children</h2>';
+    if(children.length===0) html += '<div class="glass-card p-8 text-center">No children</div>';
+    else children.forEach(c => html += `<div class="glass-card p-5 mb-3 font-medium">${c.studentName} (Class ${c.class})</div>`);
+    document.getElementById('mainContent').innerHTML = html;
+};
+window.showParentAttendance = async function() {
+    let parent = await getDocument(COLLECTIONS.parents, currentUser.refId); if(!parent) return;
+    let att = (await getCollection(COLLECTIONS.attendance)).filter(a => a.studentId === parent.childId);
+    let students = await getCollection(COLLECTIONS.students);
+    let html = '<h2 class="text-3xl font-extrabold mb-6">📆 Children attendance</h2><div class="glass-card p-6"><table class="w-full table-premium"><tr><th>Student</th><th>Date</th><th>Status</th></tr>';
+    if(att.length===0) html += `<tr><td colspan="3" class="text-center py-4">No records</td></tr>`;
+    else att.forEach(a => { let s = students.find(st=>st.id===a.studentId); html += `<tr><td>${s?.studentName}</td><td>${a.date}</td><td><span class="px-2 py-1 rounded-full ${a.status==='present'?'bg-emerald-500/20 text-emerald-300':'bg-amber-500/20 text-amber-300'}">${a.status}</span></td></tr>`; });
+    html += '</table></div>';
+    document.getElementById('mainContent').innerHTML = html;
+};
+window.showParentFees = async function() {
+    let parent = await getDocument(COLLECTIONS.parents, currentUser.refId); if(!parent) return;
+    let childId = parent.childId; let fees = (await getCollection(COLLECTIONS.fees)).filter(f => f.studentId === childId);
+    let student = await getDocument(COLLECTIONS.students, childId);
+    let html = `<h2 class="text-3xl font-extrabold mb-6">💰 Fee Ledger for ${student?.studentName}</h2>
+    <button onclick="window.printParentFeeLedger(${childId})" class="mb-4 px-6 py-3 bg-cyan-600 rounded-xl text-white font-bold"><i class="fas fa-print mr-2"></i>Print Full Ledger</button>
+    <div class="glass-card p-6"><table class="w-full table-premium"><thead><tr><th>Month</th><th>Amount</th><th>Fine</th><th>Status</th><th>Challan</th></tr></thead><tbody>`;
+    if(fees.length===0) html += `<tr><td colspan="5" class="text-center py-4">No records</td></tr>`;
+    else fees.forEach(f => html += `<tr><td>${f.month}</td><td>${f.amount}</td><td>${f.fine||0}</td><td><span class="px-2 py-1 rounded-full ${f.status==='paid'?'bg-emerald-500/20 text-emerald-300':'bg-rose-500/20 text-rose-300'}">${f.status}</span></td><td><button onclick="window.printChallan(${f.id})" class="px-3 py-1 bg-cyan-600/50 rounded-lg">🖨️</button></td></tr>`);
+    html += '</tbody></table></div>';
+    document.getElementById('mainContent').innerHTML = html;
+};
+window.printParentFeeLedger = async function(childId) {
+    let fees = (await getCollection(COLLECTIONS.fees)).filter(f => f.studentId === childId);
+    let student = await getDocument(COLLECTIONS.students, childId);
+    const { jsPDF } = window.jspdf; const doc = new jsPDF();
+    doc.setFontSize(18); doc.text(`Fee Ledger: ${student?.studentName}`, 14, 20);
+    let y=35; doc.setFontSize(10); doc.text('Month',14,y); doc.text('Amount',70,y); doc.text('Fine',110,y); doc.text('Status',150,y); y+=7;
+    fees.forEach(f => { if(y>270){ doc.addPage(); y=20; } doc.text(f.month,14,y); doc.text(String(f.amount),70,y); doc.text(String(f.fine||0),110,y); doc.text(f.status,150,y); y+=7; });
+    doc.save(`Fee_Ledger_${student?.studentName}.pdf`);
+};
+
+// ==================== LOAD SESSION ====================
+(async function() {
+    await ensureAdminExists();
+    await ensureAllParentsExist();
+    if (loadSession()) {
+        document.getElementById('loginContainer').classList.add('hidden');
+        document.getElementById('appContainer').classList.remove('hidden');
+        renderSidebar();
+        await requestNotificationPermission();
+        startNotificationPolling();
+        if (currentUser.role === 'director') showDirectorDashboard();
+        else if (currentUser.role === 'admin') showDashboard();
+        else if (currentUser.role === 'teacher') showTeacherDashboard();
+        else if (currentUser.role === 'student') showStudentProfile();
+        else if (currentUser.role === 'parent') showParentDashboard();
+    }
+})();
+</script>
+</body>
+</html>
